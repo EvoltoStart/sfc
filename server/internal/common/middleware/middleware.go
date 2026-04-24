@@ -60,12 +60,36 @@ func RequireAuth(svc *service.Service, next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func RequireAdminAuth(svc *service.Service, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authHeader := strings.TrimSpace(r.Header.Get("Authorization"))
+		if !strings.HasPrefix(authHeader, "Bearer ") {
+			response.Error(w, r, errno.ErrUserNotLogin)
+			return
+		}
+		token := strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+		adminUser, appErr := svc.AuthenticateAdmin(token)
+		if appErr != nil {
+			response.Error(w, r, appErr)
+			return
+		}
+
+		ctx := requestctx.WithAdminUserID(r.Context(), adminUser.ID)
+		ctx = requestctx.WithToken(ctx, token)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+}
+
 func UserID(r *http.Request) int64 {
 	return requestctx.UserID(r.Context())
 }
 
 func Token(r *http.Request) string {
 	return requestctx.Token(r.Context())
+}
+
+func AdminUserID(r *http.Request) int64 {
+	return requestctx.AdminUserID(r.Context())
 }
 
 func RequestIDFromContext(ctx context.Context) string {

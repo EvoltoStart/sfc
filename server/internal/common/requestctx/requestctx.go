@@ -5,9 +5,10 @@ import "context"
 type contextKey string
 
 const (
-	requestIDKey contextKey = "request_id"
-	userIDKey    contextKey = "user_id"
-	tokenKey     contextKey = "token"
+	requestIDKey   contextKey = "request_id"
+	userIDKey      contextKey = "user_id"
+	adminUserIDKey contextKey = "admin_user_id"
+	tokenKey       contextKey = "token"
 )
 
 func WithRequestID(ctx context.Context, requestID string) context.Context {
@@ -28,6 +29,17 @@ func WithUserID(ctx context.Context, userID int64) context.Context {
 func UserID(ctx context.Context) int64 {
 	if userID, ok := ctx.Value(userIDKey).(int64); ok {
 		return userID
+	}
+	return 0
+}
+
+func WithAdminUserID(ctx context.Context, adminUserID int64) context.Context {
+	return context.WithValue(ctx, adminUserIDKey, adminUserID)
+}
+
+func AdminUserID(ctx context.Context) int64 {
+	if adminUserID, ok := ctx.Value(adminUserIDKey).(int64); ok {
+		return adminUserID
 	}
 	return 0
 }

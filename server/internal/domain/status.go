@@ -47,6 +47,13 @@ const (
 	WithdrawStatusDone    = "DONE"
 	WithdrawStatusFailed  = "FAILED"
 
+	AuditTaskStatusPending  = "PENDING"
+	AuditTaskStatusApproved = "APPROVED"
+	AuditTaskStatusRejected = "REJECTED"
+
+	AdminUserStatusActive   = "ACTIVE"
+	AdminUserStatusDisabled = "DISABLED"
+
 	RolePassenger = "PASSENGER"
 	RoleDriver    = "DRIVER"
 )

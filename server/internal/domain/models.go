@@ -306,3 +306,55 @@ type FrequencyLimitLog struct {
 	Passed            bool
 	CreatedAt         time.Time
 }
+
+type AdminUser struct {
+	ID          int64
+	Username    string
+	Password    string
+	DisplayName string
+	Mobile      string
+	Status      string
+	LastLoginAt *time.Time
+	CreatedAt   time.Time
+	RoleCodes   []string
+	ButtonCodes []string
+	MenuCodes   []string
+	DataScopes  []string
+}
+
+type AdminSession struct {
+	Token       string
+	AdminUserID int64
+	CreatedAt   time.Time
+}
+
+type AuditTask struct {
+	ID            int64
+	TaskType      string
+	BizID         int64
+	ApplicantName string
+	TaskStatus    string
+	SubmittedAt   time.Time
+	Remark        string
+	MaterialList  []map[string]any
+	HistoryLogs   []map[string]any
+}
+
+type CMSBanner struct {
+	ID        int64
+	Title     string
+	ImageURL  string
+	LinkURL   string
+	SortNo    int
+	Status    string
+	UpdatedAt time.Time
+}
+
+type CMSArticle struct {
+	ID        int64
+	Type      string
+	Title     string
+	Content   string
+	Status    string
+	UpdatedAt time.Time
+}

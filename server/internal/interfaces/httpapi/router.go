@@ -30,6 +30,7 @@ func NewRouter(svc *service.Service) http.Handler {
 	registerPaymentRoutes(mux, svc, handler)
 	registerWalletRoutes(mux, svc, handler)
 	registerSafetyRoutes(mux, svc, handler)
+	registerAdminRoutes(mux, svc, handler)
 
 	return middleware.Recoverer(middleware.RequestID(mux))
 }
