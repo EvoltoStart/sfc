@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "安全",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index",
+    "empty-state": "/components/empty-state/index"
+  }
+}

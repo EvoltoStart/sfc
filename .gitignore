@@ -1,0 +1,14 @@
+.idea/
+.vscode/
+.playwright-cli/
+artifacts/
+output/
+**/node_modules/
+**/.tmp-state*.json
+**/.tmp-*.png
+
+# Windows / local runtime
+*.log
+*.exe
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,12 @@
+<view class="bottom-nav">
+  <block wx:for="{{items}}" wx:key="key">
+    <view
+      class="bottom-nav__item {{item.activeClass}}"
+      data-key="{{item.key}}"
+      bindtap="handleTap"
+    >
+      <text class="bottom-nav__label">{{item.label}}</text>
+      <text class="bottom-nav__hint">{{item.hint}}</text>
+    </view>
+  </block>
+</view>

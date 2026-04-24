@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客户端行程详情</title>
+  <link rel="stylesheet" href="./client-ui-v2.css">
+</head>
+<body>
+  <div class="page">
+    <div class="phone-shell">
+      <div class="mist one"></div>
+      <div class="mist two"></div>
+      <div class="content">
+        <div class="topbar">
+          <div>
+            <div class="eyebrow">乘客端 · 可申请同行</div>
+            <div class="title">这趟路，顺得稳也坐得安心</div>
+            <div class="subtitle">先把顺路度、费用拆分和安全保障说明给你看清，再决定要不要上车，不让判断建立在“猜”上。</div>
+          </div>
+          <div class="weather">
+            <strong>14:30</strong>
+            <span>今日发车</span>
+          </div>
+        </div>
+
+        <section class="hero-card detail-hero">
+          <div class="hero-intro">
+            <div class="mini-note">平台已校验实名、路线重合度与费用完整性</div>
+            <div class="hero-badges">
+              <span class="badge safe">顺路 96%</span>
+              <span class="badge info">剩余 2 座</span>
+              <span class="badge warn">预计 3 分钟内可确认</span>
+            </div>
+            <h2>义乌到杭州东，几乎不绕路的午后同行</h2>
+            <p>适合 1 人轻行李出发，路线稳定、上高速快，车内偏安静，适合希望一路省心到站的乘客。</p>
+          </div>
+
+          <div class="route-visual">
+            <div class="route-scene">
+              <div class="route-mini-badge">132 km</div>
+              <svg class="route-mini-svg" viewBox="0 0 120 88" preserveAspectRatio="none" aria-hidden="true">
+                <path class="map-road-stroke subtle" d="M-4 26 C18 8, 42 8, 62 20 S96 44, 124 20"></path>
+                <path class="map-road-stroke subtle" d="M6 78 C28 62, 48 72, 68 56 S94 18, 120 14"></path>
+                <path class="map-road-stroke" d="M4 70 C22 66, 38 58, 52 48 S80 30, 106 18"></path>
+                <path class="map-route-shadow" d="M8 68 C24 64, 40 56, 54 48 S80 32, 104 20"></path>
+                <path class="map-route-main" d="M8 68 C24 64, 40 56, 54 48 S80 32, 104 20"></path>
+              </svg>
+              <div class="route-mini-label start">义乌</div>
+              <div class="route-mini-label end">杭州东</div>
+              <div class="route-mini-current">高速直连优先 · 绕路预计 18 分钟内</div>
+            </div>
+            <div class="route-legend">
+              <div class="route-node">
+                <div class="route-pin"></div>
+                <div class="route-copy">
+                  <strong>义乌国际商贸城五区</strong>
+                  <span>建议 14:18 前到达上车点，支持站内短信提醒。</span>
+                </div>
+                <div class="route-time">14:30 出发</div>
+              </div>
+              <div class="route-node">
+                <div class="route-pin mid"></div>
+                <div class="route-copy">
+                  <strong>金义东高速 · 直连段</strong>
+                  <span>全程高速优先，绕行预估控制在 18 分钟以内。</span>
+                </div>
+                <div class="route-time">约 1 小时</div>
+              </div>
+              <div class="route-node">
+                <div class="route-pin end"></div>
+                <div class="route-copy">
+                  <strong>杭州东站 P6 落客区</strong>
+                  <span>默认东广场到达点，可在上车前通过订单沟通微调。</span>
+                </div>
+                <div class="route-time">16:05 到达</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-summary">
+            <div class="summary-card">
+              <strong>4.9 分</strong>
+              <span>车主稳定评分</span>
+            </div>
+            <div class="summary-card">
+              <strong>324 单</strong>
+              <span>历史同行订单</span>
+            </div>
+            <div class="summary-card">
+              <strong>0 投诉</strong>
+              <span>近 30 日争议记录</span>
+            </div>
+          </div>
+
+          <div class="hero-note"><strong>本次提示：</strong>当前价格在平台建议区间内，若后续发生高速费波动，会在支付前再次提示，不会静默加价。</div>
+        </section>
+
+        <div class="section-title">
+          <strong>车主信息</strong>
+          <span>决定是否同行，先看可信度</span>
+        </div>
+
+        <section class="route-card">
+          <div class="driver-head">
+            <div class="driver-info">
+              <div class="avatar">陈</div>
+              <div>
+                <div class="driver-name">陈师傅 · 别克 GL8 舒适版</div>
+                <div class="meta">实名认证 · 驾驶证已核验 · 常走义乌杭州线</div>
+              </div>
+            </div>
+            <span class="badge safe">优先推荐</span>
+          </div>
+          <div class="verify-list">
+            <span>车主实名</span>
+            <span>车辆认证</span>
+            <span>近 90 天无重大取消</span>
+            <span>支持行程分享</span>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-block">
+              <strong>车内偏安静</strong>
+              <span>更适合休息、办公或轻声沟通，不接受车内吸烟。</span>
+            </div>
+            <div class="detail-block">
+              <strong>中号行李 2 件</strong>
+              <span>可放后备厢，超大箱建议上车前先沟通确认。</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="section-title">
+          <strong>行程安排</strong>
+          <span>把时间、上车和座位说透</span>
+        </div>
+
+        <section class="panel" style="padding:16px;">
+          <div class="detail-layout">
+            <div class="detail-row">
+              <span>上车点</span>
+              <strong>义乌国际商贸城五区 3 号门</strong>
+            </div>
+            <div class="detail-row">
+              <span>落客点</span>
+              <strong>杭州东站 P6 落客区</strong>
+            </div>
+            <div class="detail-row">
+              <span>预计里程</span>
+              <strong>132 km</strong>
+            </div>
+            <div class="detail-row">
+              <span>同行偏好</span>
+              <strong>不拼烟味 / 可带轻食 / 支持充电</strong>
+            </div>
+          </div>
+          <div class="capacity-row">
+            <div class="capacity-head">
+              <strong>座位情况</strong>
+              <span>3 座已约，当前剩余 2 座</span>
+            </div>
+            <div class="seat-track"></div>
+            <div class="seat-tags">
+              <span>副驾保留给熟客</span>
+              <span>后排更宽松</span>
+              <span>名额偏紧，建议尽快申请</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="section-title">
+          <strong>费用明细</strong>
+          <span>不只给总价，也说明怎么算</span>
+        </div>
+
+        <section class="fare-card">
+          <div class="fare-top">
+            <div class="fare-total">
+              <strong>¥78</strong>
+              <span>预计支付总额，车主确认后进入支付页</span>
+            </div>
+            <span class="fare-tag">平台已校验</span>
+          </div>
+          <div class="fare-list">
+            <div class="fare-item">
+              <div>
+                <label>车费</label>
+                <span>按当前线路、距离与建议单价估算</span>
+              </div>
+              <strong>¥68</strong>
+            </div>
+            <div class="fare-item">
+              <div>
+                <label>高速费分摊</label>
+                <span>按本次同行人数预估，实际差额下单前会提醒</span>
+              </div>
+              <strong>¥6</strong>
+            </div>
+            <div class="fare-item">
+              <div>
+                <label>平台服务费</label>
+                <span>用于支付担保、轨迹留痕与客服支持</span>
+              </div>
+              <strong>¥4</strong>
+            </div>
+          </div>
+          <div class="fare-footnote"><strong>费用说明：</strong>平台禁止线下私下议价和脱离订单交易。若车主后续调整上车点导致费用变化，系统会先重新确认，再决定是否继续同行。</div>
+        </section>
+
+        <section class="info-banner" style="margin-top:12px;">
+          <div>
+            <strong>当前费用较稳，可放心申请</strong>
+            <p>过去 7 天同线路平均支付区间为 ¥75 - ¥82，本次报价处于正常范围，没有溢价风险。</p>
+          </div>
+          <span class="signal-pill">价格平稳</span>
+        </section>
+
+        <div class="section-title">
+          <strong>安全保障</strong>
+          <span>不是口号，要看得到落点</span>
+        </div>
+
+        <section class="guard-card">
+          <div class="row">
+            <div>
+              <strong style="font-size:16px;">平台已为这趟同行预置守护链路</strong>
+              <div class="meta">申请成功后可直接分享行程、同步轨迹、必要时一键求助。</div>
+            </div>
+            <span class="badge info">全程留痕</span>
+          </div>
+          <div class="guard-grid">
+            <div class="guard-item">
+              <div class="guard-icon">享</div>
+              <strong>行程分享</strong>
+              <span>上车后自动生成分享卡片，可发给家人。</span>
+            </div>
+            <div class="guard-item">
+              <div class="guard-icon">录</div>
+              <strong>录音说明</strong>
+              <span>异常场景可触发录音留痕，平时不打扰同行体验。</span>
+            </div>
+            <div class="guard-item">
+              <div class="guard-icon">援</div>
+              <strong>SOS 协助</strong>
+              <span>订单内一键报警与平台协助入口始终可见。</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="quiet-panel">
+          <strong>申请前建议</strong>
+          <p>如果你有大件行李、儿童乘车或需要提前变更下车点，建议在申请备注里写清楚，这样车主更容易快速确认，也能减少后续改价或取消。</p>
+        </section>
+
+        <section class="action-dock">
+          <div class="action-dock-head">
+            <div>
+              <strong>准备申请同行</strong>
+              <span>提交后等待车主确认，确认后再进入支付</span>
+            </div>
+            <div class="action-total">
+              <strong>¥78</strong>
+              <span>预计支付</span>
+            </div>
+          </div>
+          <div class="action-row">
+            <a class="btn-ghost" href="#">先收藏</a>
+            <a class="btn" href="#">申请同行</a>
+          </div>
+        </section>
+
+        <div class="tabbar">
+          <span class="active">首页</span>
+          <span>订单</span>
+          <span>发布</span>
+          <span>安全</span>
+          <span>我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

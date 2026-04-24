@@ -1,0 +1,73 @@
+<view class="page-shell">
+  <view class="page-content">
+    <view class="header-card">
+      <view class="topbar">
+        <view>
+          <view class="hero-kicker">匹配列表 · 真实结果</view>
+          <view class="hero-title">{{searchDraft.startName}} → {{searchDraft.endName}}</view>
+          <view class="hero-desc">当前搜索条件下共返回 {{resultCount}} 条真实匹配结果，你可以按顺路度、费用或时间重新排序。</view>
+        </view>
+        <view class="topbar__aside">
+          <text class="topbar__value">{{resultCount}}</text>
+          <text class="topbar__label">可选行程</text>
+        </view>
+      </view>
+      <view class="chip-row" style="margin-top: 22rpx;">
+        <view class="{{routeSortClass}}" data-sort="route" bindtap="handleSortChange">最顺路</view>
+        <view class="{{feeSortClass}}" data-sort="fee" bindtap="handleSortChange">费用低</view>
+        <view class="{{departSortClass}}" data-sort="depart" bindtap="handleSortChange">更早出发</view>
+        <view class="chip chip--soft" bindtap="loadMatches">刷新结果</view>
+      </view>
+    </view>
+
+    <empty-state
+      wx:if="{{!authState.token}}"
+      title="还没有登录"
+      description="匹配列表需要真实账号和真实接口才能拉取结果。"
+      action-text="返回首页"
+      bind:action="handleBack"
+    />
+
+    <empty-state
+      wx:if="{{showEmptyState}}"
+      title="当前没有匹配结果"
+      description="可以回首页调整路线或时间，再次调用真实搜索接口。"
+      action-text="返回首页"
+      bind:action="handleBack"
+    />
+
+    <view wx:for="{{matches}}" wx:key="tripId" class="record-card record-card--highlight">
+      <view class="record-card__header">
+        <view class="inline-row">
+          <view class="avatar-badge">{{item.avatarText}}</view>
+          <view>
+            <view class="record-card__title">{{item.driverName}}</view>
+            <view class="record-card__sub">{{item.ratingText}} · {{item.departText}}</view>
+          </view>
+        </view>
+        <status-tag text="{{item.routeScoreText}}" tone="safe" />
+      </view>
+      <view class="record-card__row">
+        <view>
+          <view class="record-card__value">{{item.feeText}}</view>
+          <view class="record-card__caption">预估费用</view>
+        </view>
+        <view>
+          <view class="record-card__value">{{item.seatAvailable}}</view>
+          <view class="record-card__caption">{{item.seatText}}</view>
+        </view>
+      </view>
+      <view class="record-card__meta">
+        <text>行程 {{item.tripId}}</text>
+        <text>排序分 {{item.sortScore}}</text>
+      </view>
+      <view class="record-card__actions">
+        <button class="button-primary button-inline" data-trip-id="{{item.tripId}}" data-depart-at="{{item.departAt}}" bindtap="handleOpenTrip">查看详情并申请</button>
+      </view>
+    </view>
+
+    <view class="footer-space"></view>
+  </view>
+
+  <bottom-nav active="home" />
+</view>

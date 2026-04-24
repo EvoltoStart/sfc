@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>车主端驾驶证认证</title>
+  <link rel="stylesheet" href="./client-ui-v2.css">
+</head>
+<body>
+  <div class="page">
+    <div class="phone-shell">
+      <div class="mist one"></div>
+      <div class="mist two"></div>
+      <div class="content">
+        <div class="topbar">
+          <div>
+            <div class="eyebrow">车主端 · 驾驶证认证</div>
+            <div class="title">上传资料、看审核结果、重新提交，都在这一页闭环</div>
+            <div class="subtitle">认证页最怕把用户丢进一堆表单里，所以这里把上传区、审核状态、填写说明和重新提交入口放在同一条路径上。</div>
+          </div>
+          <div class="weather">
+            <strong>审核中</strong>
+            <span>当前状态</span>
+          </div>
+        </div>
+
+        <section class="upload-panel">
+          <div class="row">
+            <div>
+              <strong style="font-size:16px;">驾驶证正副页</strong>
+              <div class="meta">支持拍照上传或从相册导入，系统会自动识别关键信息。</div>
+            </div>
+            <span class="upload-badge">资料已提交</span>
+          </div>
+          <div class="upload-zone">
+            <div>
+              <strong>拖拽或点击上传</strong>
+              <span>请保持姓名、证号、准驾车型和有效期清晰可见，避免反光遮挡。</span>
+            </div>
+          </div>
+          <div class="hero-summary">
+            <div class="summary-card">
+              <strong>C1</strong>
+              <span>当前识别车型</span>
+            </div>
+            <div class="summary-card">
+              <strong>2029</strong>
+              <span>有效期至</span>
+            </div>
+            <div class="summary-card">
+              <strong>1 次</strong>
+              <span>本次提交记录</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="guard-card" style="margin-top:14px;">
+          <div class="row">
+            <div>
+              <strong style="font-size:16px;">审核状态</strong>
+              <div class="meta">当前资料正在人工校验，预计 24 小时内给出结果。</div>
+            </div>
+            <span class="badge info">审核中</span>
+          </div>
+          <div class="checklist">
+            <div class="check-item">
+              <em>1</em>
+              <div>
+                <strong>姓名与证号已识别</strong>
+                <span>系统已完成基础 OCR，当前等待人工核验与车型匹配。</span>
+              </div>
+            </div>
+            <div class="check-item">
+              <em>2</em>
+              <div>
+                <strong>若照片模糊会被驳回</strong>
+                <span>驳回后会明确提示原因，并保留重新提交入口，不需要用户重走全流程。</span>
+              </div>
+            </div>
+            <div class="check-item">
+              <em>3</em>
+              <div>
+                <strong>通过后自动解锁发单资格</strong>
+                <span>认证通过后，发布页与车辆页的限制会自动解除。</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="quiet-panel">
+          <strong>填写说明</strong>
+          <p>如果系统识别到证件有效期即将到期，建议优先更新最新资料后再发单，避免在行程履约中途因为资质变化被系统限制。</p>
+        </section>
+
+        <div class="action-row" style="margin-top:14px;">
+          <a class="btn-ghost" href="#">查看驳回说明</a>
+          <a class="btn" href="#">重新提交</a>
+        </div>
+
+        <div class="tabbar">
+          <span>首页</span>
+          <span>订单</span>
+          <span class="active">发布</span>
+          <span>安全</span>
+          <span>我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

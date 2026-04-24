@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "车辆管理",
+  "usingComponents": {
+    "bottom-nav": "/components/bottom-nav/index",
+    "status-tag": "/components/status-tag/index",
+    "empty-state": "/components/empty-state/index"
+  }
+}

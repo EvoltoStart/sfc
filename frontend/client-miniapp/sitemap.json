@@ -1,0 +1,9 @@
+{
+  "desc": "顺风车客户端小程序 sitemap",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

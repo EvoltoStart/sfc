@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客户端订单页</title>
+  <link rel="stylesheet" href="./client-ui-v2.css">
+</head>
+<body>
+  <div class="page">
+    <div class="phone-shell">
+      <div class="mist one"></div>
+      <div class="mist two"></div>
+      <div class="content">
+        <div class="topbar">
+          <div>
+            <div class="eyebrow">订单 · 进行中</div>
+            <div class="title">一段安稳的行程，状态都在眼前</div>
+            <div class="subtitle">从司机确认到到达结算，关键节点都有明确留痕，安全工具不再藏很深。</div>
+          </div>
+          <div class="weather">
+            <strong>14:56</strong>
+            <span>实时更新</span>
+          </div>
+        </div>
+
+        <section class="progress-card">
+          <div class="driver-head">
+            <div class="driver-info">
+              <div class="avatar">陈</div>
+              <div>
+                <div class="driver-name">陈师傅 · 别克 GL8</div>
+                <div class="meta">订单号 QY202604170814</div>
+              </div>
+            </div>
+            <span class="badge safe">已上车</span>
+          </div>
+          <div class="route-meta">
+            <span>义乌 → 杭州东站</span>
+            <span>预计 18:12 到达</span>
+          </div>
+          <div class="status-band">
+            <div class="metric-pill">
+              <strong>38.7 km</strong>
+              <span>已行驶</span>
+            </div>
+            <div class="metric-pill">
+              <strong>4.9</strong>
+              <span>司机评分</span>
+            </div>
+            <div class="metric-pill">
+              <strong>在线</strong>
+              <span>平台守护</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="timeline" style="margin-top:14px;">
+          <div class="timeline-row">
+            <em>14:25</em>
+            <span>车主确认同行申请</span>
+            <span class="timeline-tag">完成</span>
+          </div>
+          <div class="timeline-row">
+            <em>14:28</em>
+            <span>平台已完成线上支付冻结</span>
+            <span class="timeline-tag">完成</span>
+          </div>
+          <div class="timeline-row">
+            <em>14:35</em>
+            <span>乘客确认上车，轨迹留痕已开始</span>
+            <span class="timeline-tag">完成</span>
+          </div>
+          <div class="timeline-row">
+            <em>现在</em>
+            <span>行程进行中，已行驶 38.7 km</span>
+            <span class="timeline-tag">进行中</span>
+          </div>
+        </section>
+
+        <section class="map-strip" style="margin-top:14px;">
+          <span class="small-label">实时路程</span>
+          <div class="map-overview">
+            <div class="map-float">剩余 52 km</div>
+            <div class="map-float secondary">预计 15:42 到达</div>
+            <div class="map-grid">
+              <svg class="map-svg" viewBox="0 0 320 126" preserveAspectRatio="none" aria-hidden="true">
+                <path class="map-road-stroke" d="M-8 36 C56 20, 104 26, 150 46 S244 84, 332 48"></path>
+                <path class="map-road-stroke subtle" d="M14 112 C82 96, 116 118, 176 92 S250 32, 334 18"></path>
+                <path class="map-road-stroke subtle" d="M26 16 C82 40, 118 82, 168 72 S246 20, 330 66"></path>
+                <path class="map-route-shadow" d="M44 98 C88 94, 116 84, 150 72 S210 52, 278 24"></path>
+                <path class="map-route-main" d="M44 98 C88 94, 116 84, 150 72 S210 52, 278 24"></path>
+              </svg>
+              <div class="map-pin-spot start" style="--x:14%; --y:79%;">
+                <span class="map-pin"></span>
+                <small>义乌上车点</small>
+              </div>
+              <div class="map-pin-spot via" style="--x:49%; --y:63%;">
+                <span class="map-pin"></span>
+                <small>金华段</small>
+              </div>
+              <div class="map-pin-spot end" style="--x:84%; --y:28%;">
+                <span class="map-pin"></span>
+                <small>杭州东站</small>
+              </div>
+              <div class="map-current" style="--x:55%; --y:56%;">
+                <span></span>
+                <small>当前实时位置</small>
+              </div>
+            </div>
+            <div class="map-stats">
+              <div class="map-stat">
+                <strong>38.7 km</strong>
+                <span>已行驶</span>
+              </div>
+              <div class="map-stat">
+                <strong>52 km</strong>
+                <span>距终点</span>
+              </div>
+              <div class="map-stat">
+                <strong>0 偏航</strong>
+                <span>路线状态</span>
+              </div>
+            </div>
+            <div class="map-bottomline"><strong>当前判断：</strong>车辆正在金华段高速正常行驶，轨迹留痕连续，预计按原路线到达杭州东站。</div>
+          </div>
+        </section>
+
+        <section class="tool-card" style="margin-top:14px;">
+          <strong style="font-size:16px;">安心工具</strong>
+          <div class="tool-grid">
+            <div class="tool">
+              <strong>分享行程</strong>
+              <span>实时位置同步给家人</span>
+            </div>
+            <div class="tool">
+              <strong>联系紧急人</strong>
+              <span>快速拨打默认联系人</span>
+            </div>
+          </div>
+          <button class="danger-action">一键 SOS / 平台协助</button>
+        </section>
+
+        <section class="panel" style="margin-top:14px; padding:16px;">
+          <div class="detail-row">
+            <span>已支付</span>
+            <strong>¥78</strong>
+          </div>
+          <div class="detail-row">
+            <span>平台保障</span>
+            <strong>行程留痕已开启</strong>
+          </div>
+          <div class="detail-row">
+            <span>到达后</span>
+            <strong>系统自动结算给车主</strong>
+          </div>
+        </section>
+
+        <section class="quiet-panel">
+          <strong>当前建议</strong>
+          <p>如果临时变更下车点，先通过订单内沟通，让费用和轨迹变更继续留在平台记录里。</p>
+        </section>
+
+        <div class="tabbar">
+          <span>首页</span>
+          <span class="active">订单</span>
+          <span>发布</span>
+          <span>安全</span>
+          <span>我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

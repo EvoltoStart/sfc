@@ -1,0 +1,185 @@
+<view class="page-shell">
+  <view class="page-content">
+    <view class="header-card">
+      <view class="topbar">
+        <view>
+          <view class="hero-kicker">乘客端 · 真实搜索</view>
+          <view class="hero-title hero-title--large">今天想顺着哪阵风出发？</view>
+          <view class="hero-desc">
+            {{profileDisplayName}}，把顺路度、价格透明度和基础安全能力先放到台前，小程序直接接真实后端筛结果。
+          </view>
+        </view>
+        <view class="topbar__aside">
+          <text class="topbar__value">{{featuredTotalText}}</text>
+          <text class="topbar__label">实时推荐</text>
+        </view>
+      </view>
+      <view class="metrics-row" style="margin-top: 22rpx;">
+        <view class="metric-pill">
+          <text class="metric-pill__value">{{loginStateText}}</text>
+          <text class="metric-pill__label">真实接口状态</text>
+        </view>
+        <view class="metric-pill">
+          <text class="metric-pill__value">{{searchDraft.minRouteScore}}%</text>
+          <text class="metric-pill__label">顺路度门槛</text>
+        </view>
+        <view class="metric-pill">
+          <text class="metric-pill__value">{{searchDraft.departTime}}</text>
+          <text class="metric-pill__label">本次出发时间</text>
+        </view>
+      </view>
+      <view class="hero-note">
+        开发态默认指向 <text selectable="true">http://127.0.0.1:18082</text>，支付成功模拟通过本地 4174 代理回调。
+      </view>
+    </view>
+
+    <view wx:if="{{!authState.token}}" class="hero-card hero-card--accent">
+      <view class="section-heading">
+        <view class="section-heading__body">
+          <view class="section-title">先登录一个真实账号</view>
+          <view class="section-desc">支持开发 code 快捷登录，也保留微信登录按钮，方便后续接真机联调。</view>
+        </view>
+      </view>
+      <view class="quick-login-grid">
+        <button
+          wx:for="{{quickLoginCodes}}"
+          wx:key="code"
+          class="button-secondary quick-login-button"
+          data-code="{{item.code}}"
+          bindtap="handleQuickLogin"
+          loading="{{loggingIn}}"
+        >
+          {{item.label}}
+        </button>
+      </view>
+      <view class="field-group" style="margin-top: 18rpx;">
+        <text class="field-label">自定义登录 code</text>
+        <input
+          class="field-input"
+          placeholder="例如 passenger-alpha / driver-alpha"
+          value="{{loginCode}}"
+          bindinput="handleLoginCodeInput"
+        />
+      </view>
+      <view class="button-row" style="margin-top: 18rpx;">
+        <button class="button-primary" bindtap="handleLoginSubmit" loading="{{loggingIn}}">开发 code 登录</button>
+        <button class="button-ghost" bindtap="handleWechatLogin" loading="{{loggingIn}}">微信登录</button>
+      </view>
+    </view>
+
+    <view class="hero-card">
+      <view class="section-heading">
+        <view class="section-heading__body">
+          <view class="section-title">搜索条件</view>
+          <view class="section-desc">路线预设只负责填充经纬度，真正的匹配结果仍来自真实搜索接口。</view>
+        </view>
+        <button class="button-ghost button-inline" bindtap="handleGoProfile">去我的</button>
+      </view>
+      <view class="chip-row" style="margin-top: 18rpx;">
+        <view
+          wx:for="{{routePresetItems}}"
+          wx:key="id"
+          class="{{item.chipClass}}"
+          data-preset="{{item.id}}"
+          bindtap="handlePresetTap"
+        >
+          {{item.routeName}}
+        </view>
+      </view>
+      <view class="field-group" style="margin-top: 18rpx;">
+        <text class="field-label">起点</text>
+        <input class="field-input" data-field="startName" value="{{searchDraft.startName}}" bindinput="handleSearchFieldInput" />
+      </view>
+      <view class="field-group" style="margin-top: 18rpx;">
+        <text class="field-label">终点</text>
+        <input class="field-input" data-field="endName" value="{{searchDraft.endName}}" bindinput="handleSearchFieldInput" />
+      </view>
+      <view class="grid-two" style="margin-top: 18rpx;">
+        <view class="field-group">
+          <text class="field-label">出发日期</text>
+          <picker mode="date" value="{{searchDraft.departDate}}" bindchange="handleDateChange">
+            <view class="field-picker">{{searchDraft.departDate}}</view>
+          </picker>
+        </view>
+        <view class="field-group">
+          <text class="field-label">出发时间</text>
+          <picker mode="time" value="{{searchDraft.departTime}}" bindchange="handleTimeChange">
+            <view class="field-picker">{{searchDraft.departTime}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="field-group" style="margin-top: 18rpx;">
+        <text class="field-label">最低顺路度</text>
+        <input class="field-input" type="number" data-field="minRouteScore" value="{{searchDraft.minRouteScore}}" bindinput="handleSearchFieldInput" />
+      </view>
+      <view class="button-row" style="margin-top: 20rpx;">
+        <button class="button-primary" bindtap="handleSearch" loading="{{loading}}">看看顺路推荐</button>
+        <button class="button-secondary" bindtap="handleRefreshFeatured" loading="{{loading}}">刷新首页推荐</button>
+      </view>
+    </view>
+
+    <view class="section-heading">
+      <view class="section-heading__body">
+        <view class="section-title">今天适合的车主</view>
+        <view class="section-desc">默认只展示当前搜索条件下的前 3 条真实匹配结果。</view>
+      </view>
+    </view>
+
+    <empty-state
+      wx:if="{{!featuredMatches.length}}"
+      title="还没有推荐结果"
+      description="登录后点击“看看顺路推荐”，小程序会调用真实搜索接口并把结果带到匹配列表。"
+      action-text="立即搜索"
+      bind:action="handleSearch"
+    />
+
+    <view wx:for="{{featuredMatches}}" wx:key="tripId" class="record-card record-card--highlight">
+      <view class="record-card__header">
+        <view class="inline-row">
+          <view class="avatar-badge">{{item.avatarText}}</view>
+          <view>
+            <view class="record-card__title">{{item.driverName}}</view>
+            <view class="record-card__sub">{{item.ratingText}} · {{item.departText}}</view>
+          </view>
+        </view>
+        <status-tag text="{{item.routeScoreText}}" tone="safe" />
+      </view>
+      <view class="record-card__row">
+        <view>
+          <view class="record-card__value">{{item.feeText}}</view>
+          <view class="record-card__caption">预估费用</view>
+        </view>
+        <view>
+          <view class="record-card__value">{{item.seatAvailable}}</view>
+          <view class="record-card__caption">{{item.seatText}}</view>
+        </view>
+      </view>
+      <view class="record-card__meta">
+        <text>行程 ID {{item.tripId}}</text>
+        <text>排序分 {{item.sortScore}}</text>
+      </view>
+      <view class="record-card__actions">
+        <button class="button-ghost button-inline" data-trip-id="{{item.tripId}}" bindtap="handleOpenTrip">查看详情</button>
+      </view>
+    </view>
+
+    <view class="panel-card">
+      <view class="section-title">接入说明</view>
+      <view wx:for="{{capabilityNotes}}" wx:key="*this" class="hero-note hero-note--safe">
+        {{item}}
+      </view>
+    </view>
+
+    <view class="panel-card">
+      <view class="section-title">联调 FAQ</view>
+      <view wx:for="{{faqItems}}" wx:key="id" class="info-strip" style="margin-top: 14rpx;">
+        <view class="info-strip__title">{{item.question}}</view>
+        <view class="info-strip__desc">{{item.answer}}</view>
+      </view>
+    </view>
+
+    <view class="footer-space"></view>
+  </view>
+
+  <bottom-nav active="home" />
+</view>

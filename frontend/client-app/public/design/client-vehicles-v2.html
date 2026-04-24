@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>车主端车辆管理</title>
+  <link rel="stylesheet" href="./client-ui-v2.css">
+</head>
+<body>
+  <div class="page">
+    <div class="phone-shell">
+      <div class="mist one"></div>
+      <div class="mist two"></div>
+      <div class="content">
+        <div class="topbar">
+          <div>
+            <div class="eyebrow">车主端 · 车辆管理</div>
+            <div class="title">把可用车辆、认证状态和默认设置管清楚</div>
+            <div class="subtitle">车辆页不是单纯车辆相册，而是车主发单前的基础资产管理页。重点要让用户知道哪辆车可发、哪辆还在审、默认发单用哪辆。</div>
+          </div>
+          <div class="weather">
+            <strong>2 辆</strong>
+            <span>已录入</span>
+          </div>
+        </div>
+
+        <section class="hero-card detail-hero">
+          <div class="hero-intro">
+            <div class="mini-note">默认车辆会自动带入发布页，减少重复选择</div>
+            <h2>先把车管好，后面的发布和接单才会顺</h2>
+            <p>车辆认证状态必须清晰可见，否则车主会在发布时才发现无法发车，体验会被打断。</p>
+          </div>
+          <div class="hero-summary">
+            <div class="summary-card">
+              <strong>1 辆</strong>
+              <span>认证通过</span>
+            </div>
+            <div class="summary-card">
+              <strong>1 辆</strong>
+              <span>审核中</span>
+            </div>
+            <div class="summary-card">
+              <strong>默认</strong>
+              <span>别克 GL8</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="vehicle-card" style="margin-top:14px;">
+          <div class="driver-head">
+            <div>
+              <div class="driver-name">别克 GL8 舒适版</div>
+              <div class="meta">浙 G8X126 · 7 座商务车 · 默认发单车辆</div>
+            </div>
+            <span class="badge safe">认证通过</span>
+          </div>
+          <div class="vehicle-stage"></div>
+          <div class="vehicle-meta">
+            <div class="detail-block">
+              <strong>可载 3 人</strong>
+              <span>按平台当前顺风车规则核定座位。</span>
+            </div>
+            <div class="detail-block">
+              <strong>车况稳定</strong>
+              <span>近 90 天无审核驳回记录，可直接用于发布。</span>
+            </div>
+          </div>
+          <div class="order-actions">
+            <a class="btn-ghost" href="#">设为默认</a>
+            <a class="btn-soft" href="#">编辑车辆</a>
+          </div>
+        </section>
+
+        <section class="vehicle-card">
+          <div class="driver-head">
+            <div>
+              <div class="driver-name">比亚迪唐 DM-i</div>
+              <div class="meta">浙 G3M529 · 5 座 SUV · 新增待审核</div>
+            </div>
+            <span class="badge info">审核中</span>
+          </div>
+          <div class="vehicle-stage"></div>
+          <div class="vehicle-meta">
+            <div class="detail-block">
+              <strong>资料已提交</strong>
+              <span>行驶证、车辆照片和车牌信息已上传。</span>
+            </div>
+            <div class="detail-block">
+              <strong>预计 24 小时</strong>
+              <span>审核通过后可用于后续发单选择。</span>
+            </div>
+          </div>
+          <div class="order-actions">
+            <a class="btn-ghost" href="#">补充资料</a>
+            <a class="btn-soft" href="#">查看审核</a>
+          </div>
+        </section>
+
+        <div class="action-row" style="margin-top:14px;">
+          <a class="btn-ghost" href="#">查看认证说明</a>
+          <a class="btn" href="#">添加车辆</a>
+        </div>
+
+        <div class="tabbar">
+          <span>首页</span>
+          <span>订单</span>
+          <span class="active">发布</span>
+          <span>安全</span>
+          <span>我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<view class="empty-state">
+  <view class="empty-state__icon">顺</view>
+  <view class="empty-state__title">{{title}}</view>
+  <view class="empty-state__description">{{description}}</view>
+  <button
+    wx:if="{{actionText}}"
+    class="button-secondary empty-state__button"
+    bindtap="handleAction"
+  >
+    {{actionText}}
+  </button>
+</view>

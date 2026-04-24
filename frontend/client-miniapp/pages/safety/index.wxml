@@ -1,0 +1,98 @@
+<view class="page-shell">
+  <view class="page-content">
+    <view class="header-card">
+      <view class="topbar">
+        <view>
+          <view class="hero-kicker">安全中心 · 诚实接入</view>
+          <view class="hero-title">把真的能力接上，把还没开的能力说清楚</view>
+          <view class="hero-desc">当前页优先接真实紧急联系人，其余能力继续以“待后端开放”为准，不制造假状态。</view>
+        </view>
+        <view class="topbar__aside">
+          <text class="topbar__value">{{contacts.length}}</text>
+          <text class="topbar__label">已保存联系人</text>
+        </view>
+      </view>
+      <view class="metrics-row" style="margin-top: 22rpx;">
+        <view wx:for="{{capabilityCards}}" wx:key="title" class="metric-pill">
+          <text class="metric-pill__value">{{item.title}}</text>
+          <text class="metric-pill__label">{{item.toneLabel}}</text>
+        </view>
+      </view>
+    </view>
+
+    <empty-state
+      wx:if="{{!authState.token}}"
+      title="还没有登录"
+      description="安全中心的联系人管理已经接入真实接口，请先登录再操作。"
+      action-text="去我的登录"
+      bind:action="handleGoProfile"
+    />
+
+    <view wx:if="{{authState.token}}" class="panel-card">
+      <view class="section-title">能力状态</view>
+      <view wx:for="{{capabilityCards}}" wx:key="title" class="hero-note {{item.noteClass}}">
+        <text style="font-weight: 700;">{{item.title}}</text>
+        <text> · {{item.description}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{authState.token}}" class="hero-card hero-card--accent">
+      <view class="section-title">新增紧急联系人</view>
+      <view class="section-desc">这里直接调用真实联系人接口，保存后会立刻回刷列表。</view>
+      <view class="field-group" style="margin-top: 18rpx;">
+        <text class="field-label">姓名</text>
+        <input class="field-input" data-field="name" value="{{contactDraft.name}}" bindinput="handleDraftInput" />
+      </view>
+      <view class="grid-two" style="margin-top: 18rpx;">
+        <view class="field-group">
+          <text class="field-label">手机号</text>
+          <input class="field-input" data-field="mobile" value="{{contactDraft.mobile}}" bindinput="handleDraftInput" />
+        </view>
+        <view class="field-group">
+          <text class="field-label">关系</text>
+          <input class="field-input" data-field="relation" value="{{contactDraft.relation}}" bindinput="handleDraftInput" />
+        </view>
+      </view>
+      <view class="form-switch-row" style="margin-top: 20rpx;">
+        <text class="field-label">设为默认联系人</text>
+        <switch checked="{{contactDraft.isDefault}}" color="#49a171" bindchange="handleDefaultChange" />
+      </view>
+      <view class="button-row" style="margin-top: 20rpx;">
+        <button class="button-primary" bindtap="handleCreateContact" loading="{{submitting}}">保存联系人</button>
+      </view>
+    </view>
+
+    <view wx:if="{{authState.token}}" class="panel-card">
+      <view class="section-title">已保存联系人</view>
+      <empty-state
+        wx:if="{{!contacts.length}}"
+        title="还没有联系人"
+        description="新增后会显示联系人姓名、关系和默认状态。"
+      />
+      <view wx:for="{{contacts}}" wx:key="id" class="record-card">
+        <view class="record-card__header">
+          <view>
+            <view class="record-card__title">{{item.name}}</view>
+            <view class="record-card__sub">{{item.relation}} · {{item.mobileMasked}}</view>
+          </view>
+          <view class="{{item.defaultChipClass}}">{{item.defaultLabel}}</view>
+        </view>
+        <view class="record-card__actions">
+          <button class="button-danger button-inline" data-id="{{item.id}}" bindtap="handleDeleteContact">删除</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="panel-card">
+      <view class="section-title">联调 FAQ</view>
+      <view wx:for="{{faqItems}}" wx:key="id" class="info-strip" style="margin-top: 14rpx;">
+        <view class="info-strip__title">{{item.question}}</view>
+        <view class="info-strip__desc">{{item.answer}}</view>
+      </view>
+    </view>
+
+    <view class="footer-space"></view>
+  </view>
+
+  <bottom-nav active="safety" />
+</view>

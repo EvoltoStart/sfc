@@ -1,0 +1,20 @@
+{
+  "description": "顺风车客户端微信小程序",
+  "appid": "touristappid",
+  "projectname": "sfc-client-miniapp",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "./",
+  "srcMiniprogramRoot": "./",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": false,
+    "urlCheck": false,
+    "coverView": true,
+    "autoAudits": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true
+  },
+  "simulatorType": "wechat"
+}

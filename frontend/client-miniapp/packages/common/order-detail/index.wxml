@@ -1,0 +1,151 @@
+<view class="page-shell">
+  <view class="page-content">
+    <view class="header-card">
+      <view class="topbar">
+        <view>
+          <view class="hero-kicker">订单详情 · 真实链路</view>
+          <view class="hero-title">{{headerTitleText}}</view>
+          <view class="hero-desc">申请态和订单态共用一个详情入口，但动作会随真实后端状态变化。</view>
+        </view>
+        <view class="topbar__aside">
+          <text class="topbar__value">{{headerKindText}}</text>
+          <text class="topbar__label">当前记录类型</text>
+        </view>
+      </view>
+    </view>
+
+    <empty-state
+      wx:if="{{!authState.token}}"
+      title="还没有登录"
+      description="订单详情需要真实账号和已创建的申请/订单。"
+      action-text="返回订单中心"
+      bind:action="handleBack"
+    />
+
+    <view wx:if="{{showJoinPanel}}" class="hero-card hero-card--accent">
+      <view class="section-heading">
+        <view class="section-heading__body">
+          <view class="section-title">{{joinDetail.routeInfo.tripRouteSummary}}</view>
+          <view class="section-desc">申请号 {{joinDetail.joinRequestId}} · 行程 {{joinDetail.tripId}}</view>
+        </view>
+        <status-tag text="{{joinView.statusMeta.label}}" tone="{{joinView.statusMeta.tone}}" />
+      </view>
+      <view class="route-line">
+        <view class="route-step">
+          <view class="route-step__dot"></view>
+          <view>
+            <text class="route-step__title">{{joinDetail.startPoint.name}}</text>
+            <text class="route-step__desc">你的上车点，已通过真实申请接口提交。</text>
+          </view>
+        </view>
+        <view class="route-step">
+          <view class="route-step__dot route-step__dot--end"></view>
+          <view>
+            <text class="route-step__title">{{joinDetail.endPoint.name}}</text>
+            <text class="route-step__desc">目标终点。若司机接受，系统会自动生成真实订单。</text>
+          </view>
+        </view>
+      </view>
+      <view class="record-card record-card--highlight" style="margin-top: 18rpx;">
+        <view class="record-card__header">
+          <view class="inline-row">
+            <view class="avatar-badge">{{joinView.avatarText}}</view>
+            <view>
+              <view class="record-card__title">{{joinView.driverName}}</view>
+              <view class="record-card__sub">{{joinView.ratingText}}</view>
+            </view>
+          </view>
+          <status-tag text="{{joinView.statusMeta.label}}" tone="{{joinView.statusMeta.tone}}" />
+        </view>
+        <view class="record-card__meta">
+          <text>acceptedAt {{joinView.acceptedText}}</text>
+          <text>cancelledAt {{joinView.cancelledText}}</text>
+        </view>
+      </view>
+      <view wx:if="{{joinView.linkedOrderId}}" class="hero-note hero-note--safe">
+        司机已经接受这次申请，并且系统找到了关联订单。下一步可以直接打开订单进入支付或履约链路。
+      </view>
+      <view class="button-row" style="margin-top: 20rpx;">
+        <button wx:if="{{joinView.canCancelJoin}}" class="button-danger" bindtap="handleCancelJoin" loading="{{actioning}}">取消申请</button>
+        <button wx:if="{{joinView.linkedOrderId}}" class="button-primary" bindtap="handleOpenLinkedOrder">打开关联订单</button>
+      </view>
+    </view>
+
+    <view wx:if="{{showOrderPanel}}" class="hero-card hero-card--accent">
+      <view class="section-heading">
+        <view class="section-heading__body">
+          <view class="section-title">{{orderDetail.routeInfo.startName}} → {{orderDetail.routeInfo.endName}}</view>
+          <view class="section-desc">订单号 {{orderDetail.orderNo}} · {{orderView.departText}}</view>
+        </view>
+        <status-tag text="{{orderView.statusMeta.label}}" tone="{{orderView.statusMeta.tone}}" />
+      </view>
+      <view class="metrics-row" style="margin-top: 18rpx;">
+        <view class="metric-pill">
+          <text class="metric-pill__value">{{orderView.payableText}}</text>
+          <text class="metric-pill__label">应付金额</text>
+        </view>
+        <view class="metric-pill">
+          <text class="metric-pill__value">{{orderView.distanceText}}</text>
+          <text class="metric-pill__label">订单距离</text>
+        </view>
+        <view class="metric-pill">
+          <text class="metric-pill__value">{{orderView.paymentStatusText}}</text>
+          <text class="metric-pill__label">支付状态</text>
+        </view>
+      </view>
+      <view class="route-line">
+        <view class="route-step">
+          <view class="route-step__dot"></view>
+          <view>
+            <text class="route-step__title">{{orderDetail.routeInfo.startName}}</text>
+            <text class="route-step__desc">预计 {{orderView.departText}} 出发。</text>
+          </view>
+        </view>
+        <view class="route-step">
+          <view class="route-step__dot route-step__dot--end"></view>
+          <view>
+            <text class="route-step__title">{{orderDetail.routeInfo.endName}}</text>
+            <text class="route-step__desc">轨迹摘要 {{orderView.trackDistanceText}}，到达后会进入真实结算链路。</text>
+          </view>
+        </view>
+      </view>
+      <view class="record-card" style="margin-top: 18rpx;">
+        <view class="record-card__header">
+          <view>
+            <view class="record-card__title">支付与结算</view>
+            <view class="record-card__sub">已支付时间 {{orderView.paymentPaidAtText}}</view>
+          </view>
+          <status-tag text="{{orderView.paymentStatusText}}" tone="{{orderView.paymentTone}}" />
+        </view>
+        <view class="record-card__meta">
+          <text>服务费 {{orderView.serviceFeeText}}</text>
+          <text>支付金额 {{orderView.paymentAmountText}}</text>
+          <text>结算金额 {{orderView.settlementText}}</text>
+        </view>
+      </view>
+      <view class="record-card" style="margin-top: 18rpx;">
+        <view class="record-card__header">
+          <view>
+            <view class="record-card__title">同行双方</view>
+            <view class="record-card__sub">{{orderView.driverName}} / {{orderView.passengerName}}</view>
+          </view>
+        </view>
+        <view class="record-card__meta">
+          <text>车主评分 {{orderView.driverRatingText}}</text>
+          <text>乘客评分 {{orderView.passengerRatingText}}</text>
+          <text>安全动作 {{orderView.safetyActionCount}}</text>
+        </view>
+      </view>
+      <view class="button-row" style="margin-top: 20rpx;">
+        <button wx:if="{{orderView.canPay}}" class="button-primary" bindtap="handleOpenPayment">去支付</button>
+        <button wx:if="{{orderView.canConfirmBoard}}" class="button-primary" bindtap="handleConfirmBoard" loading="{{actioning}}">确认上车</button>
+        <button wx:if="{{orderView.canConfirmArrival}}" class="button-primary" bindtap="handleConfirmArrival" loading="{{actioning}}">确认到达</button>
+        <button wx:if="{{orderView.canCancel}}" class="button-danger" bindtap="handleCancelOrder" loading="{{actioning}}">取消订单</button>
+      </view>
+    </view>
+
+    <view class="footer-space"></view>
+  </view>
+
+  <bottom-nav active="order" />
+</view>

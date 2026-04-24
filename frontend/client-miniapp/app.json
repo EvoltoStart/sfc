@@ -1,0 +1,42 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/order/index",
+    "pages/publish/index",
+    "pages/safety/index",
+    "pages/profile/index"
+  ],
+  "subPackages": [
+    {
+      "root": "packages/passenger",
+      "pages": [
+        "match-list/index",
+        "trip-detail/index",
+        "payment-confirm/index"
+      ]
+    },
+    {
+      "root": "packages/common",
+      "pages": [
+        "order-detail/index"
+      ]
+    },
+    {
+      "root": "packages/driver",
+      "pages": [
+        "vehicles/index",
+        "license/index",
+        "wallet/index"
+      ]
+    }
+  ],
+  "window": {
+    "navigationBarTitleText": "顺风车客户端",
+    "navigationBarBackgroundColor": "#f5fbf6",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#eef7f1",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
