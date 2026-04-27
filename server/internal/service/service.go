@@ -9,6 +9,7 @@ type Service struct {
 	routePassScore float64
 	mapClient      MapClient
 	paymentGateway PaymentGateway
+	wechatMiniapp  WechatMiniappClient
 	config         Config
 }
 
@@ -21,6 +22,7 @@ type Config struct {
 type Dependencies struct {
 	MapClient      MapClient
 	PaymentGateway PaymentGateway
+	WechatMiniapp  WechatMiniappClient
 	Config         Config
 }
 
@@ -34,11 +36,15 @@ func NewWithDependencies(store store.Store, deps Dependencies) *Service {
 	if deps.Config.ShareBaseURL == "" {
 		deps.Config.ShareBaseURL = "https://share.sfc.local"
 	}
+	if deps.WechatMiniapp == nil {
+		deps.WechatMiniapp = NewFakeWechatMiniappClient()
+	}
 	return &Service{
 		store:          store,
 		routePassScore: 90,
 		mapClient:      deps.MapClient,
 		paymentGateway: deps.PaymentGateway,
+		wechatMiniapp:  deps.WechatMiniapp,
 		config:         deps.Config,
 	}
 }

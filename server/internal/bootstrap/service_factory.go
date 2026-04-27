@@ -1,24 +1,13 @@
 package bootstrap
 
 import (
-	"os"
-	"strings"
-
+	appconfig "sfc/server/internal/config"
 	"sfc/server/internal/infrastructure/mapclient"
 	"sfc/server/internal/infrastructure/paymentgateway"
+	"sfc/server/internal/infrastructure/wechatmini"
 	"sfc/server/internal/service"
 	"sfc/server/internal/store"
 )
-
-func envFirst(keys ...string) string {
-	for _, key := range keys {
-		value := strings.TrimSpace(os.Getenv(key))
-		if value != "" {
-			return value
-		}
-	}
-	return ""
-}
 
 func defaultConfig() service.Config {
 	return service.Config{
@@ -28,32 +17,48 @@ func defaultConfig() service.Config {
 	}
 }
 
-func configFromEnv() service.Config {
-	cfg := defaultConfig()
-	if value := envFirst("SFC_ALIPAY_NOTIFY_URL", "SFC_PAYMENT_NOTIFY_URL"); value != "" {
-		cfg.PaymentNotifyURL = value
-	}
-	if value := envFirst("SFC_ALIPAY_RETURN_URL", "SFC_PAYMENT_RETURN_URL"); value != "" {
-		cfg.PaymentReturnURL = value
-	}
-	if value := envFirst("SFC_SHARE_BASE_URL"); value != "" {
-		cfg.ShareBaseURL = strings.TrimRight(value, "/")
-	}
-	return cfg
-}
-
-func NewService(memoryStore *store.MemoryStore) *service.Service {
-	return service.NewWithDependencies(memoryStore, service.Dependencies{
+func NewService(appStore store.Store) *service.Service {
+	return service.NewWithDependencies(appStore, service.Dependencies{
 		MapClient:      mapclient.NewFallback(),
 		PaymentGateway: paymentgateway.NewMock(),
+		WechatMiniapp:  service.NewFakeWechatMiniappClient(),
 		Config:         defaultConfig(),
 	})
 }
 
-func NewServiceFromEnv(memoryStore *store.MemoryStore) *service.Service {
-	return service.NewWithDependencies(memoryStore, service.Dependencies{
-		MapClient:      mapclient.NewAMap(envFirst("SFC_AMAP_KEY", "MAP_KEY"), envFirst("SFC_AMAP_BASE_URL")),
-		PaymentGateway: paymentgateway.NewAlipaySandbox(envFirst("SFC_ALIPAY_APP_ID"), envFirst("SFC_ALIPAY_PRIVATE_KEY"), envFirst("SFC_ALIPAY_PUBLIC_KEY")),
-		Config:         configFromEnv(),
+func NewServiceFromConfig(appStore store.Store, cfg appconfig.AppConfig) *service.Service {
+	mapClient := mapclient.NewAMap(cfg.AMapKey, cfg.AMapBaseURL)
+	if cfg.AMapFake {
+		mapClient = mapclient.NewFallback()
+	}
+	wechatClient := wechatmini.New(cfg.WechatMiniappAppID, cfg.WechatMiniappSecret)
+	if cfg.WechatMiniappFake {
+		wechatClient = service.NewFakeWechatMiniappClient()
+	}
+	return service.NewWithDependencies(appStore, service.Dependencies{
+		MapClient:      mapClient,
+		PaymentGateway: paymentgateway.NewAlipaySandbox(cfg.AlipayAppID, cfg.AlipayPrivateKey, cfg.AlipayPublicKey),
+		WechatMiniapp:  wechatClient,
+		Config:         cfg.ServiceConfig(),
 	})
+}
+
+func NewServiceFromEnv(appStore store.Store) (*service.Service, error) {
+	cfg, err := appconfig.LoadFromEnv()
+	if err != nil {
+		return nil, err
+	}
+	return NewServiceFromConfig(appStore, cfg), nil
+}
+
+func NewStoreFromConfig(cfg appconfig.AppConfig) (store.Store, error) {
+	return store.NewSQLiteStore(cfg.SQLitePath)
+}
+
+func NewStoreFromEnv() (store.Store, error) {
+	cfg, err := appconfig.LoadFromEnv()
+	if err != nil {
+		return nil, err
+	}
+	return NewStoreFromConfig(cfg)
 }

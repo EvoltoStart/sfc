@@ -44,12 +44,13 @@ type MemoryStore struct {
 	WalletLedgers  map[int64][]*domain.WalletLedger
 	Withdraws      map[int64]*domain.WithdrawRecord
 
-	RuleSnapshots map[int64]*domain.RuleSnapshot
-	PricingLogs   map[int64]*domain.PricingAuditLog
-	FrequencyLogs map[int64]*domain.FrequencyLimitLog
-	AuditTasks    map[int64]*domain.AuditTask
-	CMSBanners    map[int64]*domain.CMSBanner
-	CMSArticles   map[string]*domain.CMSArticle
+	RuleSnapshots      map[int64]*domain.RuleSnapshot
+	PricingLogs        map[int64]*domain.PricingAuditLog
+	FrequencyLogs      map[int64]*domain.FrequencyLimitLog
+	AuditTasks         map[int64]*domain.AuditTask
+	OperationAuditLogs map[int64]*domain.OperationAuditLog
+	CMSBanners         map[int64]*domain.CMSBanner
+	CMSArticles        map[string]*domain.CMSArticle
 }
 
 func NewMemoryStore() *MemoryStore {
@@ -86,6 +87,7 @@ func NewMemoryStore() *MemoryStore {
 		PricingLogs:          map[int64]*domain.PricingAuditLog{},
 		FrequencyLogs:        map[int64]*domain.FrequencyLimitLog{},
 		AuditTasks:           map[int64]*domain.AuditTask{},
+		OperationAuditLogs:   map[int64]*domain.OperationAuditLog{},
 		CMSBanners:           map[int64]*domain.CMSBanner{},
 		CMSArticles:          map[string]*domain.CMSArticle{},
 	}

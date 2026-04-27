@@ -20,7 +20,10 @@ func newEnvBackedTestServer(t *testing.T, env map[string]string) *httptest.Serve
 	for key, value := range env {
 		t.Setenv(key, value)
 	}
-	svc := bootstrap.NewServiceFromEnv(store.NewMemoryStore())
+	svc, err := bootstrap.NewServiceFromEnv(store.NewMemoryStore())
+	if err != nil {
+		t.Fatalf("create service from env failed: %v", err)
+	}
 	return httptest.NewServer(NewRouter(svc))
 }
 

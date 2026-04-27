@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -46,13 +47,20 @@ func (s *Service) WxLogin(code string) (*LoginResult, *errno.Error) {
 	s.store.Lock()
 	defer s.store.Unlock()
 
+	wxSession, err := s.wechatMiniapp.Code2Session(context.Background(), code)
+	if err != nil || wxSession == nil || strings.TrimSpace(wxSession.OpenID) == "" {
+		return nil, errno.New("WECHAT_LOGIN_FAILED", "微信登录凭证校验失败", http.StatusBadRequest)
+	}
+
+	openID := strings.TrimSpace(wxSession.OpenID)
 	currentTime := now()
-	user, exists := s.store.Snapshot().UsersByOpenID[code]
+	user, exists := s.store.Snapshot().UsersByOpenID[openID]
 	if !exists {
 		user = &domain.User{
 			ID:             s.store.NextID("user"),
-			OpenID:         code,
-			Nickname:       fmt.Sprintf("鐢ㄦ埛%d", len(s.store.Snapshot().Users)+1),
+			OpenID:         openID,
+			UnionID:        strings.TrimSpace(wxSession.UnionID),
+			Nickname:       fmt.Sprintf("用户%d", len(s.store.Snapshot().Users)+1),
 			AvatarURL:      "",
 			RealnameStatus: domain.RealnameStatusUnsubmitted,
 			UserStatus:     domain.UserStatusActive,
@@ -60,12 +68,15 @@ func (s *Service) WxLogin(code string) (*LoginResult, *errno.Error) {
 			CreatedAt:      currentTime,
 		}
 		s.store.Snapshot().Users[user.ID] = user
-		s.store.Snapshot().UsersByOpenID[code] = user
+		s.store.Snapshot().UsersByOpenID[openID] = user
 	} else {
+		if strings.TrimSpace(wxSession.UnionID) != "" {
+			user.UnionID = strings.TrimSpace(wxSession.UnionID)
+		}
 		user.LastLoginAt = currentTime
 	}
 
-	token := generateToken(code, user.ID)
+	token := generateToken(openID, user.ID)
 	s.store.Snapshot().Sessions[token] = &domain.Session{
 		Token:     token,
 		UserID:    user.ID,

@@ -20,6 +20,7 @@ func NewRouter(svc *service.Service) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", handler.healthz)
+	mux.HandleFunc("GET /readyz", handler.readyz)
 	registerAuthRoutes(mux, svc, handler)
 	registerUserRoutes(mux, svc, handler)
 	registerDriverRoutes(mux, svc, handler)
@@ -32,12 +33,18 @@ func NewRouter(svc *service.Service) http.Handler {
 	registerSafetyRoutes(mux, svc, handler)
 	registerAdminRoutes(mux, svc, handler)
 
-	return middleware.Recoverer(middleware.RequestID(mux))
+	return middleware.Recoverer(middleware.RequestID(middleware.AccessLog(mux)))
 }
 
 func (h *Handler) healthz(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, r, map[string]any{
 		"status": "ok",
+	})
+}
+
+func (h *Handler) readyz(w http.ResponseWriter, r *http.Request) {
+	response.Success(w, r, map[string]any{
+		"status": "ready",
 	})
 }
 

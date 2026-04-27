@@ -116,6 +116,36 @@ func (s *Service) GetAdminPermissions(adminUserID int64) (map[string]any, *errno
 	}, nil
 }
 
+func (s *Service) AdminHasPermission(adminUserID int64, permissionCode string) bool {
+	permissionCode = strings.TrimSpace(permissionCode)
+	if permissionCode == "" {
+		return true
+	}
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	adminUser := s.store.Snapshot().AdminUsers[adminUserID]
+	if adminUser == nil || adminUser.Status != domain.AdminUserStatusActive {
+		return false
+	}
+	for _, roleCode := range adminUser.RoleCodes {
+		if roleCode == "SUPER_ADMIN" {
+			return true
+		}
+	}
+	for _, buttonCode := range adminUser.ButtonCodes {
+		if buttonCode == permissionCode {
+			return true
+		}
+	}
+	for _, menuCode := range adminUser.MenuCodes {
+		if menuCode == permissionCode {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Service) GetAdminDashboard() (map[string]any, *errno.Error) {
 	s.store.Lock()
 	defer s.store.Unlock()
@@ -258,11 +288,15 @@ func (s *Service) updateAdminAuditStatus(adminUserID, taskID int64, status, rema
 	}
 	task.TaskStatus = status
 	task.Remark = strings.TrimSpace(remark)
+	nowValue := now()
 	task.HistoryLogs = append(task.HistoryLogs, map[string]any{
 		"operatorName": adminUser.DisplayName,
 		"taskStatus":   status,
 		"remark":       task.Remark,
-		"createdAt":    now(),
+		"createdAt":    nowValue,
+	})
+	s.appendOperationAuditLocked(adminUserID, "ADMIN", "AUDIT_"+status, task.TaskType, task.BizID, map[string]any{
+		"remark": task.Remark,
 	})
 
 	switch task.TaskType {
@@ -674,6 +708,228 @@ func (s *Service) GetAdminFinanceReports() (map[string]any, *errno.Error) {
 	}, nil
 }
 
+func (s *Service) ListAdminUsers(keyword string, page, pageSize int) (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	type item struct {
+		UserID         int64      `json:"userId"`
+		Nickname       string     `json:"nickname"`
+		MobileMasked   string     `json:"mobileMasked"`
+		RealnameStatus string     `json:"realnameStatus"`
+		ContactCount   int        `json:"contactCount"`
+		OrderCount     int        `json:"orderCount"`
+		UserStatus     string     `json:"userStatus"`
+		LastLoginAt    *time.Time `json:"lastLoginAt"`
+	}
+
+	keyword = strings.TrimSpace(strings.ToLower(keyword))
+	var items []item
+	for _, user := range s.store.Snapshot().Users {
+		if keyword != "" && !strings.Contains(strings.ToLower(user.Nickname), keyword) && !strings.Contains(strings.ToLower(user.Mobile), keyword) {
+			continue
+		}
+		contactCount := 0
+		orderCount := 0
+		for _, contact := range s.store.Snapshot().Contacts {
+			if contact.UserID == user.ID {
+				contactCount++
+			}
+		}
+		for _, order := range s.store.Snapshot().Orders {
+			if order.DriverUserID == user.ID || order.PassengerUserID == user.ID {
+				orderCount++
+			}
+		}
+		items = append(items, item{
+			UserID:         user.ID,
+			Nickname:       user.Nickname,
+			MobileMasked:   user.Mobile,
+			RealnameStatus: user.RealnameStatus,
+			ContactCount:   contactCount,
+			OrderCount:     orderCount,
+			UserStatus:     user.UserStatus,
+			LastLoginAt:    &user.LastLoginAt,
+		})
+	}
+	sort.Slice(items, func(i, j int) bool { return items[i].UserID > items[j].UserID })
+	paged, currentPage, currentPageSize, total := paginate(items, page, pageSize)
+	return map[string]any{"list": paged, "page": currentPage, "pageSize": currentPageSize, "total": total}, nil
+}
+
+func (s *Service) GetAdminUserDetail(userID int64) (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	user := s.store.Snapshot().Users[userID]
+	if user == nil {
+		return nil, errno.ErrResourceNotFound
+	}
+	var contacts []map[string]any
+	var vehicleCount int
+	var tripCount int
+	var orderCount int
+	for _, contact := range s.store.Snapshot().Contacts {
+		if contact.UserID != user.ID {
+			continue
+		}
+		contacts = append(contacts, map[string]any{
+			"name":      contact.Name,
+			"mobile":    contact.Mobile,
+			"relation":  contact.Relation,
+			"isDefault": contact.IsDefault,
+		})
+	}
+	for _, vehicle := range s.store.Snapshot().Vehicles {
+		if vehicle.UserID == user.ID {
+			vehicleCount++
+		}
+	}
+	for _, trip := range s.store.Snapshot().Trips {
+		if trip.DriverUserID == user.ID {
+			tripCount++
+		}
+	}
+	for _, order := range s.store.Snapshot().Orders {
+		if order.DriverUserID == user.ID || order.PassengerUserID == user.ID {
+			orderCount++
+		}
+	}
+	return map[string]any{
+		"userInfo": map[string]any{
+			"userId":         user.ID,
+			"nickname":       user.Nickname,
+			"mobileMasked":   user.Mobile,
+			"realnameStatus": user.RealnameStatus,
+			"userStatus":     user.UserStatus,
+		},
+		"realnameInfo": map[string]any{
+			"authStatus":   user.RealnameStatus,
+			"contactCount": len(contacts),
+		},
+		"emergencyContacts": contacts,
+		"summary": map[string]any{
+			"vehicleCount": vehicleCount,
+			"tripCount":    tripCount,
+			"orderCount":   orderCount,
+		},
+		"complaintSummary": map[string]any{
+			"complaintCount": 0,
+		},
+	}, nil
+}
+
+func (s *Service) GetAdminOpsOverview() (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	type lineItem struct {
+		RouteSummary  string `json:"routeSummary"`
+		TripCount     int    `json:"tripCount"`
+		OrderCount    int    `json:"orderCount"`
+		ActiveDrivers int    `json:"activeDrivers"`
+	}
+
+	lineMap := map[string]*lineItem{}
+	driverSets := map[string]map[int64]struct{}{}
+	for _, trip := range s.store.Snapshot().Trips {
+		key := fmt.Sprintf("%s -> %s", trip.StartName, trip.EndName)
+		if lineMap[key] == nil {
+			lineMap[key] = &lineItem{RouteSummary: key}
+			driverSets[key] = map[int64]struct{}{}
+		}
+		lineMap[key].TripCount++
+		driverSets[key][trip.DriverUserID] = struct{}{}
+	}
+	for _, order := range s.store.Snapshot().Orders {
+		trip := s.store.Snapshot().Trips[order.TripID]
+		if trip == nil {
+			continue
+		}
+		key := fmt.Sprintf("%s -> %s", trip.StartName, trip.EndName)
+		if lineMap[key] == nil {
+			lineMap[key] = &lineItem{RouteSummary: key}
+			driverSets[key] = map[int64]struct{}{}
+		}
+		lineMap[key].OrderCount++
+	}
+	var lines []lineItem
+	for key, item := range lineMap {
+		item.ActiveDrivers = len(driverSets[key])
+		lines = append(lines, *item)
+	}
+	sort.Slice(lines, func(i, j int) bool { return lines[i].OrderCount > lines[j].OrderCount })
+
+	packages := []map[string]any{
+		{"packageName": "通勤包", "status": "ACTIVE", "description": "工作日早晚高峰固定通勤"},
+		{"packageName": "商务包", "status": "ACTIVE", "description": "高客单价线路组合"},
+		{"packageName": "夜间安心包", "status": "PLANNING", "description": "夜间安全专线策略"},
+	}
+
+	return map[string]any{
+		"lines":    lines,
+		"packages": packages,
+	}, nil
+}
+
+func (s *Service) ListAdminAuditLogs(page, pageSize int) (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	type item struct {
+		Time      time.Time `json:"time"`
+		Actor     string    `json:"actor"`
+		Action    string    `json:"action"`
+		RequestID string    `json:"requestId"`
+		Risk      string    `json:"risk"`
+	}
+
+	var items []item
+	for _, task := range s.store.Snapshot().AuditTasks {
+		for index, raw := range task.HistoryLogs {
+			status, _ := raw["taskStatus"].(string)
+			remark, _ := raw["remark"].(string)
+			createdAt, _ := raw["createdAt"].(time.Time)
+			operatorName, _ := raw["operatorName"].(string)
+			if operatorName == "" {
+				operatorName = "SYSTEM"
+			}
+			risk := "LOW"
+			if status == domain.AuditTaskStatusRejected {
+				risk = "MEDIUM"
+			}
+			items = append(items, item{
+				Time:      createdAt,
+				Actor:     operatorName,
+				Action:    fmt.Sprintf("%s / %s / %s", task.TaskType, status, remark),
+				RequestID: fmt.Sprintf("audit_%d_%d", task.ID, index+1),
+				Risk:      risk,
+			})
+		}
+	}
+	for _, banner := range s.store.Snapshot().CMSBanners {
+		items = append(items, item{
+			Time:      banner.UpdatedAt,
+			Actor:     "SYSTEM",
+			Action:    fmt.Sprintf("CMS_BANNER / %s / %s", banner.Title, banner.Status),
+			RequestID: fmt.Sprintf("cms_banner_%d", banner.ID),
+			Risk:      "LOW",
+		})
+	}
+	for _, auditLog := range s.store.Snapshot().OperationAuditLogs {
+		items = append(items, item{
+			Time:      auditLog.CreatedAt,
+			Actor:     auditLog.OperatorType,
+			Action:    fmt.Sprintf("%s / %s / %d", auditLog.Action, auditLog.BizType, auditLog.BizID),
+			RequestID: fmt.Sprintf("operation_%d", auditLog.ID),
+			Risk:      "LOW",
+		})
+	}
+	sort.Slice(items, func(i, j int) bool { return items[i].Time.After(items[j].Time) })
+	paged, currentPage, currentPageSize, total := paginate(items, page, pageSize)
+	return map[string]any{"list": paged, "page": currentPage, "pageSize": currentPageSize, "total": total}, nil
+}
+
 func (s *Service) ListCMSBanners() (map[string]any, *errno.Error) {
 	s.store.Lock()
 	defer s.store.Unlock()
@@ -718,6 +974,26 @@ func (s *Service) CreateCMSBanner(input CMSBannerInput) (map[string]any, *errno.
 	return map[string]any{"bannerId": banner.ID, "success": true}, nil
 }
 
+func (s *Service) CreateCMSBannerByAdmin(adminUserID int64, input CMSBannerInput) (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	banner := &domain.CMSBanner{
+		ID:        s.store.NextID("cms_banner"),
+		Title:     strings.TrimSpace(input.Title),
+		ImageURL:  strings.TrimSpace(input.ImageURL),
+		LinkURL:   strings.TrimSpace(input.LinkURL),
+		SortNo:    input.SortNo,
+		Status:    strings.TrimSpace(input.Status),
+		UpdatedAt: now(),
+	}
+	s.store.Snapshot().CMSBanners[banner.ID] = banner
+	s.appendOperationAuditLocked(adminUserID, "ADMIN", "CMS_BANNER_CREATE", "CMS_BANNER", banner.ID, map[string]any{
+		"title": banner.Title,
+	})
+	return map[string]any{"bannerId": banner.ID, "success": true}, nil
+}
+
 func (s *Service) UpdateCMSBanner(bannerID int64, input CMSBannerInput) (map[string]any, *errno.Error) {
 	s.store.Lock()
 	defer s.store.Unlock()
@@ -732,6 +1008,26 @@ func (s *Service) UpdateCMSBanner(bannerID int64, input CMSBannerInput) (map[str
 	banner.SortNo = input.SortNo
 	banner.Status = strings.TrimSpace(input.Status)
 	banner.UpdatedAt = now()
+	return map[string]any{"success": true}, nil
+}
+
+func (s *Service) UpdateCMSBannerByAdmin(adminUserID, bannerID int64, input CMSBannerInput) (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	banner := s.store.Snapshot().CMSBanners[bannerID]
+	if banner == nil {
+		return nil, errno.ErrResourceNotFound
+	}
+	banner.Title = strings.TrimSpace(input.Title)
+	banner.ImageURL = strings.TrimSpace(input.ImageURL)
+	banner.LinkURL = strings.TrimSpace(input.LinkURL)
+	banner.SortNo = input.SortNo
+	banner.Status = strings.TrimSpace(input.Status)
+	banner.UpdatedAt = now()
+	s.appendOperationAuditLocked(adminUserID, "ADMIN", "CMS_BANNER_UPDATE", "CMS_BANNER", banner.ID, map[string]any{
+		"title": banner.Title,
+	})
 	return map[string]any{"success": true}, nil
 }
 
@@ -765,6 +1061,26 @@ func (s *Service) UpdateCMSArticle(articleType string, input CMSArticleInput) (m
 	article.Content = strings.TrimSpace(input.Content)
 	article.Status = strings.TrimSpace(input.Status)
 	article.UpdatedAt = now()
+	return map[string]any{"success": true}, nil
+}
+
+func (s *Service) UpdateCMSArticleByAdmin(adminUserID int64, articleType string, input CMSArticleInput) (map[string]any, *errno.Error) {
+	s.store.Lock()
+	defer s.store.Unlock()
+
+	article := s.store.Snapshot().CMSArticles[articleType]
+	if article == nil {
+		article = &domain.CMSArticle{ID: s.store.NextID("cms_article"), Type: articleType}
+		s.store.Snapshot().CMSArticles[articleType] = article
+	}
+	article.Title = strings.TrimSpace(input.Title)
+	article.Content = strings.TrimSpace(input.Content)
+	article.Status = strings.TrimSpace(input.Status)
+	article.UpdatedAt = now()
+	s.appendOperationAuditLocked(adminUserID, "ADMIN", "CMS_ARTICLE_UPDATE", "CMS_ARTICLE", article.ID, map[string]any{
+		"articleType": articleType,
+		"title":       article.Title,
+	})
 	return map[string]any{"success": true}, nil
 }
 
@@ -807,6 +1123,20 @@ func (s *Service) ensureAuditTaskLocked(taskType string, userID, bizID int64, au
 		},
 	}
 	s.store.Snapshot().AuditTasks[task.ID] = task
+}
+
+func (s *Service) appendOperationAuditLocked(operatorID int64, operatorType, action, bizType string, bizID int64, extra map[string]any) {
+	logItem := &domain.OperationAuditLog{
+		ID:           s.store.NextID("operation_audit_log"),
+		OperatorID:   operatorID,
+		OperatorType: operatorType,
+		Action:       action,
+		BizType:      bizType,
+		BizID:        bizID,
+		Extra:        extra,
+		CreatedAt:    now(),
+	}
+	s.store.Snapshot().OperationAuditLogs[logItem.ID] = logItem
 }
 
 func authStatusFromAuditStatus(status string) string {

@@ -255,6 +255,49 @@ func (h *Handler) getAdminFinanceReports(w http.ResponseWriter, r *http.Request)
 	response.Success(w, r, result)
 }
 
+func (h *Handler) listAdminUsers(w http.ResponseWriter, r *http.Request) {
+	page, pageSize := parsePageParams(r)
+	result, appErr := h.svc.ListAdminUsers(r.URL.Query().Get("keyword"), page, pageSize)
+	if appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	response.Success(w, r, result)
+}
+
+func (h *Handler) getAdminUserDetail(w http.ResponseWriter, r *http.Request) {
+	userID, appErr := parsePathID(r, "id")
+	if appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	result, appErr := h.svc.GetAdminUserDetail(userID)
+	if appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	response.Success(w, r, result)
+}
+
+func (h *Handler) getAdminOpsOverview(w http.ResponseWriter, r *http.Request) {
+	result, appErr := h.svc.GetAdminOpsOverview()
+	if appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	response.Success(w, r, result)
+}
+
+func (h *Handler) listAdminAuditLogs(w http.ResponseWriter, r *http.Request) {
+	page, pageSize := parsePageParams(r)
+	result, appErr := h.svc.ListAdminAuditLogs(page, pageSize)
+	if appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	response.Success(w, r, result)
+}
+
 func (h *Handler) listCMSBanners(w http.ResponseWriter, r *http.Request) {
 	result, appErr := h.svc.ListCMSBanners()
 	if appErr != nil {
@@ -270,7 +313,7 @@ func (h *Handler) createCMSBanner(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, r, appErr)
 		return
 	}
-	result, appErr := h.svc.CreateCMSBanner(req)
+	result, appErr := h.svc.CreateCMSBannerByAdmin(middleware.AdminUserID(r), req)
 	if appErr != nil {
 		response.Error(w, r, appErr)
 		return
@@ -289,7 +332,7 @@ func (h *Handler) updateCMSBanner(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, r, appErr)
 		return
 	}
-	result, appErr := h.svc.UpdateCMSBanner(bannerID, req)
+	result, appErr := h.svc.UpdateCMSBannerByAdmin(middleware.AdminUserID(r), bannerID, req)
 	if appErr != nil {
 		response.Error(w, r, appErr)
 		return
@@ -312,7 +355,7 @@ func (h *Handler) updateCMSArticle(w http.ResponseWriter, r *http.Request) {
 		response.Error(w, r, appErr)
 		return
 	}
-	result, appErr := h.svc.UpdateCMSArticle(r.PathValue("type"), req)
+	result, appErr := h.svc.UpdateCMSArticleByAdmin(middleware.AdminUserID(r), r.PathValue("type"), req)
 	if appErr != nil {
 		response.Error(w, r, appErr)
 		return

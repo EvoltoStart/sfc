@@ -358,3 +358,15 @@ type CMSArticle struct {
 	Status    string
 	UpdatedAt time.Time
 }
+
+type OperationAuditLog struct {
+	ID           int64
+	OperatorID   int64
+	OperatorType string
+	Action       string
+	BizType      string
+	BizID        int64
+	RequestID    string
+	Extra        map[string]any
+	CreatedAt    time.Time
+}
