@@ -3,9 +3,9 @@
     <view class="header-card">
       <view class="topbar">
         <view>
-          <view class="hero-kicker">安全中心 · 诚实接入</view>
-          <view class="hero-title">把真的能力接上，把还没开的能力说清楚</view>
-          <view class="hero-desc">当前页优先接真实紧急联系人，其余能力继续以“待后端开放”为准，不制造假状态。</view>
+          <view class="hero-kicker">安全中心 · 真实接口</view>
+          <view class="hero-title">联系人、分享、SOS 和轨迹都走真实后端</view>
+          <view class="hero-desc">这里可以保存默认安全配置，并基于真实订单生成分享链接、上报 SOS、上传轨迹样本。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{contacts.length}}</text>
@@ -23,7 +23,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="安全中心的联系人管理已经接入真实接口，请先登录再操作。"
+      description="安全中心已经接入真实接口，请先登录再操作联系人、分享、SOS 和轨迹能力。"
       action-text="去我的登录"
       bind:action="handleGoProfile"
     />
@@ -33,6 +33,18 @@
       <view wx:for="{{capabilityCards}}" wx:key="title" class="hero-note {{item.noteClass}}">
         <text style="font-weight: 700;">{{item.title}}</text>
         <text> · {{item.description}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{authState.token}}" class="panel-card">
+      <view class="section-title">默认安全配置</view>
+      <view class="section-desc">{{safetyConfig.recordNotice}}</view>
+      <view class="chip-row" style="margin-top: 18rpx;">
+        <view class="{{safetyConfig.shareChipClass}}" bindtap="handleShareToggle">{{safetyConfig.shareLabel}}</view>
+        <view class="{{safetyConfig.recordChipClass}}" bindtap="handleRecordToggle">{{safetyConfig.recordLabel}}</view>
+      </view>
+      <view class="button-row" style="margin-top: 20rpx;">
+        <button class="button-primary" bindtap="handleSaveConfig" loading="{{actioning}}">保存安全配置</button>
       </view>
     </view>
 
@@ -78,8 +90,56 @@
           <view class="{{item.defaultChipClass}}">{{item.defaultLabel}}</view>
         </view>
         <view class="record-card__actions">
+          <button class="{{item.shareChipClass}} button-inline" data-id="{{item.id}}" bindtap="handleContactToggle">{{item.shareLabel}}</button>
           <button class="button-danger button-inline" data-id="{{item.id}}" bindtap="handleDeleteContact">删除</button>
         </view>
+      </view>
+    </view>
+
+    <view wx:if="{{authState.token}}" class="panel-card">
+      <view class="section-title">订单安全动作</view>
+      <view class="section-desc">当前选中：{{selectedOrderTitle}}</view>
+      <empty-state
+        wx:if="{{!orders.length}}"
+        title="还没有可操作订单"
+        description="先在订单中心生成乘客或车主订单，再回来验证分享、SOS 和轨迹接口。"
+      />
+      <view wx:for="{{orders}}" wx:key="orderId" class="record-card">
+        <view class="record-card__header">
+          <view>
+            <view class="record-card__title">{{item.orderTitle}}</view>
+            <view class="record-card__sub">{{item.orderNo}} · {{item.departText}}</view>
+          </view>
+          <status-tag text="{{item.orderStatus}}" tone="safe" />
+        </view>
+        <view class="record-card__actions">
+          <button class="button-ghost button-inline" data-id="{{item.orderId}}" bindtap="handleSelectOrder">选中订单</button>
+        </view>
+      </view>
+      <view class="button-row" style="margin-top: 20rpx;">
+        <button class="button-primary" bindtap="handleCreateShareLink" loading="{{actioning}}">生成分享链接</button>
+        <button class="button-secondary" bindtap="handleUploadTrace" loading="{{actioning}}">上传轨迹样本</button>
+        <button class="button-secondary" bindtap="handleRefreshTrace">刷新轨迹摘要</button>
+        <button class="button-danger" bindtap="handleCreateSOS" loading="{{actioning}}">上报 SOS</button>
+      </view>
+      <view wx:if="{{shareResult}}" class="hero-note hero-note--safe">
+        分享链接：{{shareResult.shareUrl}}
+      </view>
+      <view wx:if="{{traceSummary}}" class="record-card">
+        <view class="record-card__header">
+          <view>
+            <view class="record-card__title">轨迹摘要</view>
+            <view class="record-card__sub">{{traceSummary.startText}} → {{traceSummary.endText}}</view>
+          </view>
+          <status-tag text="{{traceSummary.abnormalText}}" tone="safe" />
+        </view>
+        <view class="record-card__meta">
+          <text>距离 {{traceSummary.distanceText}}</text>
+          <text>时长 {{traceSummary.durationText}}</text>
+        </view>
+      </view>
+      <view wx:if="{{sosResult}}" class="hero-note hero-note--warn">
+        SOS 事件已创建：{{sosResult.sosEventId}}，状态 {{sosResult.eventStatus}}
       </view>
     </view>
 

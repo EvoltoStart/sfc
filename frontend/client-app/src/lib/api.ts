@@ -264,6 +264,10 @@ export interface OrderDetail {
   arrivalConfirmedAt: string | null
   trackSummary: {
     totalDistanceMeter: number
+    totalDurationSecond?: number
+    abnormalFlag?: boolean
+    startAt?: string | null
+    endAt?: string | null
   }
   safetyActions: string[]
   settlementInfo: {
@@ -305,6 +309,33 @@ export interface WalletLedgerItem {
   balanceAfterFen: number
   bizNo: string
   createdAt: string
+}
+
+export interface SafetyConfigView {
+  shareEnabled: boolean
+  defaultShareContactIds: number[]
+  recordEnabled: boolean
+  recordNotice: string
+}
+
+export interface SafetyShareLinkResponse {
+  shareUrl: string
+  expireAt: string
+  contactIds: number[]
+}
+
+export interface SafetySOSResponse {
+  sosEventId: number
+  eventStatus: string
+  notified: boolean
+}
+
+export interface SafetyTraceSummary {
+  totalDistanceMeter: number
+  totalDurationSecond: number
+  abnormalFlag: boolean
+  startAt: string | null
+  endAt: string | null
 }
 
 interface ListResult<T> {
@@ -397,6 +428,25 @@ export interface EmergencyContactInput {
   mobile: string
   relation: string
   isDefault: boolean
+}
+
+export interface SafetyConfigInput {
+  shareEnabled: boolean
+  defaultShareContactIds: number[]
+  recordEnabled: boolean
+}
+
+export interface SafetySOSInput {
+  orderId: number
+  currentLat: number
+  currentLng: number
+  remark: string
+}
+
+export interface SafetyTracePointInput {
+  lat: number
+  lng: number
+  recordedAt: string
 }
 
 export interface RouteTemplateInput {
@@ -686,5 +736,26 @@ export const api = {
     return getPaged<WalletLedgerItem>(
       `/api/v1/wallet/ledger${buildQuery({ bizType, page: 1, pageSize: 20 })}`,
     )
+  },
+  getSafetyConfig() {
+    return get<SafetyConfigView>('/api/v1/safety/config')
+  },
+  updateSafetyConfig(payload: SafetyConfigInput) {
+    return put<{ success: boolean }>('/api/v1/safety/config', payload)
+  },
+  createSafetyShareLink(orderId: number, contactIds: number[]) {
+    return post<SafetyShareLinkResponse>('/api/v1/safety/share-links', { orderId, contactIds })
+  },
+  createSafetySOS(payload: SafetySOSInput) {
+    return post<SafetySOSResponse>('/api/v1/safety/sos', payload)
+  },
+  uploadTracePoints(orderId: number, points: SafetyTracePointInput[]) {
+    return post<{ success: boolean; recordedCount: number }>('/api/v1/safety/trace-points/batch', {
+      orderId,
+      points,
+    })
+  },
+  getTraceSummary(orderId: number) {
+    return get<SafetyTraceSummary>(`/api/v1/safety/trace-summary/${orderId}`)
   },
 }

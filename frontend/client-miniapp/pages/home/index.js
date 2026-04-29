@@ -7,7 +7,7 @@ const { formatDateTime, formatMoney, formatPercent, formatRating } = require('..
 
 const capabilityNotes = [
   '真实接口已接入登录、搜索匹配、行程详情、同行申请、支付和钱包结算主链路。',
-  '安全配置、行程分享和 SOS 仍以后端开放能力为准，页面会明确标记为待接入。',
+  '安全配置、行程分享、SOS 和轨迹摘要已接入真实接口，需要先生成订单再验证订单级动作。',
   '本地开发默认请求 18082，支付模拟回调依赖 4174 代理转发。',
 ]
 

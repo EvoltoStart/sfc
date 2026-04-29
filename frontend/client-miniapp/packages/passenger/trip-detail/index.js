@@ -19,11 +19,11 @@ function buildTripView(detail, departAt) {
     distanceText: detail.priceInfo ? formatDistance(detail.priceInfo.distanceMeter) : '--',
     departText: departAt ? formatDateTime(departAt) : '以订单确认为准',
     tripStatusMeta: resolveTripMeta(detail.tripStatus),
-    shareLabel: detail.safetyInfo && detail.safetyInfo.shareEnabled ? '已开启' : '待开放',
+    shareLabel: detail.safetyInfo && detail.safetyInfo.shareEnabled ? '已开启' : '已关闭',
     shareTone: detail.safetyInfo && detail.safetyInfo.shareEnabled ? 'hero-note--safe' : 'hero-note--warn',
     shareNote: detail.safetyInfo && detail.safetyInfo.shareEnabled
-      ? '后端返回本行程支持分享状态。'
-      : '后端暂未开放分享能力，这里保持诚实展示。',
+      ? '后端返回本行程支持分享状态，生成订单后可到安全中心创建分享链接。'
+      : '后端已开放分享能力，但当前账号默认分享未开启，可到安全中心调整配置。',
   }
 }
 

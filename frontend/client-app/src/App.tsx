@@ -25,6 +25,9 @@ import {
   type ProfileView,
   type ReviewStatusView,
   type RouteTemplateView,
+  type SafetyConfigView,
+  type SafetyShareLinkResponse,
+  type SafetyTraceSummary,
   type SessionView,
   type TripDetail,
   type TripListItem,
@@ -126,11 +129,23 @@ interface LicenseDraft {
   imageUrl: string
 }
 
+interface SafetyConfigDraft {
+  shareEnabled: boolean
+  recordEnabled: boolean
+  defaultShareContactIds: number[]
+}
+
+interface SOSDraft {
+  currentLat: number
+  currentLng: number
+  remark: string
+}
+
 interface PageCatalogItem {
   view: AppView
   label: string
   summary: string
-  mode: '真实接口' | '半接入' | '静态占位'
+  mode: '真实接口' | '静态占位'
 }
 
 const defaultPreset = routePresets[0]
@@ -143,7 +158,7 @@ const pageCatalog: PageCatalogItem[] = [
   { view: 'order-detail', label: '订单详情', summary: '申请态与订单态详情动作', mode: '真实接口' },
   { view: 'payment', label: '支付确认', summary: '真实支付单 + 本地回调联调', mode: '真实接口' },
   { view: 'publish', label: '发布行程', summary: '价格预览、顺路校验、发单', mode: '真实接口' },
-  { view: 'safety', label: '安全中心', summary: '紧急联系人真实接入，安全配置待后端补齐', mode: '半接入' },
+  { view: 'safety', label: '安全中心', summary: '安全配置、分享、SOS、轨迹摘要均接真实接口', mode: '真实接口' },
   { view: 'profile', label: '我的', summary: '资料、实名认证、司机能力入口', mode: '真实接口' },
   { view: 'vehicles', label: '车辆管理', summary: '新增车辆与默认车辆设置', mode: '真实接口' },
   { view: 'license', label: '驾驶证认证', summary: '提交驾驶证并刷新认证状态', mode: '真实接口' },
@@ -154,7 +169,7 @@ const pageCatalog: PageCatalogItem[] = [
 
 const backendCapabilityNotes = [
   '已接入真实接口：登录、资料、实名认证、紧急联系人、车辆、驾驶证、价格预览、顺路校验、发布行程、搜索匹配、同行申请、司机接单、订单、支付、钱包。',
-  '后端当前未开放：安全配置、行程分享链接、SOS、轨迹摘要，所以页面会显示为“待接入”，不会假装成功。',
+  '安全能力已接入真实接口：默认分享设置、行程分享链接、SOS 上报、轨迹点上传和轨迹摘要都能走后端闭环。',
   '常用路线列表接口当前只返回名称摘要，不返回经纬度，所以前端保留“保存常用路线”，但搜索和发布仍使用本地路线预设来驱动真实联调。',
 ]
 
@@ -409,6 +424,20 @@ function App() {
   const [routeTemplates, setRouteTemplates] = useState<RouteTemplateView[]>([])
   const [walletAccount, setWalletAccount] = useState<WalletAccount>(emptyWallet())
   const [walletLedger, setWalletLedger] = useState<WalletLedgerItem[]>([])
+  const [safetyConfig, setSafetyConfig] = useState<SafetyConfigView | null>(null)
+  const [safetyConfigDraft, setSafetyConfigDraft] = useState<SafetyConfigDraft>({
+    shareEnabled: true,
+    recordEnabled: true,
+    defaultShareContactIds: [],
+  })
+  const [selectedSafetyOrderId, setSelectedSafetyOrderId] = useState(0)
+  const [safetyShareLink, setSafetyShareLink] = useState<SafetyShareLinkResponse | null>(null)
+  const [safetyTraceSummary, setSafetyTraceSummary] = useState<SafetyTraceSummary | null>(null)
+  const [sosDraft, setSosDraft] = useState<SOSDraft>({
+    currentLat: defaultPreset.startLat,
+    currentLng: defaultPreset.startLng,
+    remark: '需要安全协助',
+  })
 
   const [searchDraft, setSearchDraft] = useState<SearchDraft>(() => buildSearchDraft(defaultPreset))
   const [publishDraft, setPublishDraft] = useState<PublishDraft>(() => buildPublishDraft(defaultPreset))
@@ -465,6 +494,9 @@ function App() {
   const currentRole: RolePreference =
     profile?.driverVerified && rolePreference === 'DRIVER' ? 'DRIVER' : 'PASSENGER'
   const currentPreset = getRoutePreset(searchDraft.presetId)
+  const safetyOrderOptions = currentRole === 'DRIVER' ? driverOrders : passengerOrders
+  const activeSafetyOrderId =
+    selectedSafetyOrderId || orderDetail?.orderId || safetyOrderOptions[0]?.orderId || 0
 
   const visibleCatalog = pageCatalog.filter((item) => {
     if (!deferredCatalogQuery) {
@@ -554,6 +586,15 @@ function App() {
     setRouteTemplates([])
     setWalletAccount(emptyWallet())
     setWalletLedger([])
+    setSafetyConfig(null)
+    setSafetyConfigDraft({
+      shareEnabled: true,
+      recordEnabled: true,
+      defaultShareContactIds: [],
+    })
+    setSelectedSafetyOrderId(0)
+    setSafetyShareLink(null)
+    setSafetyTraceSummary(null)
     resetTransientState()
     navigate('home')
     if (message) {
@@ -579,6 +620,20 @@ function App() {
     setWalletLedger(ledgerResult.list)
   }, [])
 
+  const applySafetyConfig = useCallback((config: SafetyConfigView) => {
+    setSafetyConfig(config)
+    setSafetyConfigDraft({
+      shareEnabled: config.shareEnabled,
+      recordEnabled: config.recordEnabled,
+      defaultShareContactIds: config.defaultShareContactIds,
+    })
+  }, [])
+
+  const loadSafetyConfig = useCallback(async () => {
+    const config = await api.getSafetyConfig()
+    applySafetyConfig(config)
+  }, [applySafetyConfig])
+
   const loadBootstrapData = useEffectEvent(async () => {
     if (!authToken) {
       return
@@ -599,6 +654,7 @@ function App() {
         api.listRouteTemplates(),
         api.getWalletAccount(),
         api.listWalletLedger(),
+        api.getSafetyConfig(),
       ])
 
       const [
@@ -610,6 +666,7 @@ function App() {
         nextRouteTemplates,
         nextWalletAccount,
         nextWalletLedger,
+        nextSafetyConfig,
       ] = optionalResults
 
       setRealnameStatus(nextRealname.status === 'fulfilled' ? nextRealname.value : null)
@@ -622,6 +679,16 @@ function App() {
         nextWalletAccount.status === 'fulfilled' ? nextWalletAccount.value : emptyWallet(),
       )
       setWalletLedger(nextWalletLedger.status === 'fulfilled' ? nextWalletLedger.value.list : [])
+      if (nextSafetyConfig.status === 'fulfilled') {
+        setSafetyConfig(nextSafetyConfig.value)
+        setSafetyConfigDraft({
+          shareEnabled: nextSafetyConfig.value.shareEnabled,
+          recordEnabled: nextSafetyConfig.value.recordEnabled,
+          defaultShareContactIds: nextSafetyConfig.value.defaultShareContactIds,
+        })
+      } else {
+        setSafetyConfig(null)
+      }
     } catch (error) {
       handleError(error, '会话恢复失败')
       performLogout('会话恢复失败，请重新登录')
@@ -632,7 +699,7 @@ function App() {
 
   useEffect(() => {
     void loadBootstrapData()
-  }, [authToken, loadBootstrapData])
+  }, [authToken])
 
   const refreshPassengerOrderCenter = useEffectEvent(async () => {
     setPageLoading('orders')
@@ -748,13 +815,25 @@ function App() {
       case 'wallet':
         await loadWalletBundle()
         return
+      case 'safety':
+        try {
+          await loadSafetyConfig()
+          if (currentRole === 'DRIVER') {
+            await refreshDriverOrderCenter()
+          } else {
+            await refreshPassengerOrderCenter()
+          }
+        } catch (error) {
+          handleError(error, '加载安全中心失败')
+        }
+        return
       default:
         return
     }
   })
 
   useEffect(() => {
-    if (!authToken) {
+    if (!authToken || !session || !profile) {
       return
     }
 
@@ -785,12 +864,14 @@ function App() {
     if (route.view === 'wallet') {
       void loadWalletBundle()
     }
+
   }, [
     authToken,
     currentRole,
     refreshDriverOrderCenter,
     loadJoinRequestDetail,
     loadOrderDetail,
+    loadSafetyConfig,
     loadTripDetail,
     loadWalletBundle,
     refreshDriverOrderCenter,
@@ -799,7 +880,15 @@ function App() {
     route.params.kind,
     route.params.tripId,
     route.view,
+    session,
+    profile,
   ])
+
+  useEffect(() => {
+    if (!selectedSafetyOrderId && safetyOrderOptions.length > 0) {
+      setSelectedSafetyOrderId(safetyOrderOptions[0].orderId)
+    }
+  }, [safetyOrderOptions, selectedSafetyOrderId])
 
   const handleLogin = async (code: string) => {
     const trimmed = code.trim()
@@ -1047,9 +1136,134 @@ function App() {
       await api.deleteEmergencyContact(contactId)
       const result = await api.listEmergencyContacts()
       setContacts(result.list)
+      setSafetyConfigDraft((current) => ({
+        ...current,
+        defaultShareContactIds: current.defaultShareContactIds.filter((id) => id !== contactId),
+      }))
       pushToast('联系人已删除', 'success')
     } catch (error) {
       handleError(error, '删除联系人失败')
+    } finally {
+      setBusyAction('')
+    }
+  }
+
+  const toggleSafetyContact = (contactId: number) => {
+    setSafetyConfigDraft((current) => {
+      const selected = current.defaultShareContactIds.includes(contactId)
+      return {
+        ...current,
+        defaultShareContactIds: selected
+          ? current.defaultShareContactIds.filter((id) => id !== contactId)
+          : [...current.defaultShareContactIds, contactId],
+      }
+    })
+  }
+
+  const handleUpdateSafetyConfig = async () => {
+    setBusyAction('safety-config')
+    try {
+      await api.updateSafetyConfig(safetyConfigDraft)
+      await loadSafetyConfig()
+      pushToast('安全配置已保存到真实后端', 'success')
+    } catch (error) {
+      handleError(error, '保存安全配置失败')
+    } finally {
+      setBusyAction('')
+    }
+  }
+
+  const handleCreateSafetyShareLink = async (orderId = activeSafetyOrderId) => {
+    if (!orderId) {
+      pushToast('请先选择一笔可分享的订单', 'info')
+      return
+    }
+    setBusyAction('share-link')
+    try {
+      const result = await api.createSafetyShareLink(orderId, safetyConfigDraft.defaultShareContactIds)
+      setSafetyShareLink(result)
+      pushToast('行程分享链接已生成', 'success')
+    } catch (error) {
+      handleError(error, '生成分享链接失败')
+    } finally {
+      setBusyAction('')
+    }
+  }
+
+  const handleUploadTraceSample = async (orderId = activeSafetyOrderId) => {
+    if (!orderId) {
+      pushToast('请先选择一笔订单再上传轨迹', 'info')
+      return
+    }
+    const now = Date.now()
+    const preset = currentPreset
+    setBusyAction('trace-upload')
+    try {
+      await api.uploadTracePoints(orderId, [
+        {
+          lat: preset.startLat,
+          lng: preset.startLng,
+          recordedAt: new Date(now - 8 * 60 * 1000).toISOString(),
+        },
+        {
+          lat: (preset.startLat + preset.endLat) / 2,
+          lng: (preset.startLng + preset.endLng) / 2,
+          recordedAt: new Date(now - 4 * 60 * 1000).toISOString(),
+        },
+        {
+          lat: preset.endLat,
+          lng: preset.endLng,
+          recordedAt: new Date(now).toISOString(),
+        },
+      ])
+      const summary = await api.getTraceSummary(orderId)
+      setSafetyTraceSummary(summary)
+      pushToast('轨迹点已上传，摘要已刷新', 'success')
+    } catch (error) {
+      handleError(error, '上传轨迹失败')
+    } finally {
+      setBusyAction('')
+    }
+  }
+
+  const handleLoadTraceSummary = async (orderId = activeSafetyOrderId) => {
+    if (!orderId) {
+      pushToast('请先选择一笔订单查看轨迹摘要', 'info')
+      return
+    }
+    setBusyAction('trace-summary')
+    try {
+      const summary = await api.getTraceSummary(orderId)
+      setSafetyTraceSummary(summary)
+      pushToast('轨迹摘要已刷新', 'success')
+    } catch (error) {
+      handleError(error, '读取轨迹摘要失败')
+    } finally {
+      setBusyAction('')
+    }
+  }
+
+  const handleCreateSafetySOS = async (orderId = activeSafetyOrderId) => {
+    if (!orderId) {
+      pushToast('请先选择一笔订单再上报 SOS', 'info')
+      return
+    }
+    setBusyAction('sos')
+    try {
+      const result = await api.createSafetySOS({
+        orderId,
+        currentLat: sosDraft.currentLat,
+        currentLng: sosDraft.currentLng,
+        remark: sosDraft.remark,
+      })
+      pushToast(
+        result.notified
+          ? `SOS 已上报并通知联系人，事件 ${result.sosEventId}`
+          : `SOS 已上报，事件 ${result.sosEventId}`,
+        'success',
+      )
+    } catch (error) {
+      handleError(error, '上报 SOS 失败')
     } finally {
       setBusyAction('')
     }
@@ -1367,7 +1581,7 @@ function App() {
           <div className="chips">
             <span className="chip">路线预设驱动真实经纬度</span>
             <span className="chip">顺路度门槛 {searchDraft.minRouteScore}%</span>
-            <span className="chip">安全中心如实标注待接入能力</span>
+            <span className="chip">安全中心已接分享、SOS、轨迹摘要</span>
           </div>
         </section>
 
@@ -1447,7 +1661,7 @@ function App() {
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('safety')}>
             <strong>安全中心</strong>
-            <span>联系人已真实接入，其他能力待补齐</span>
+            <span>配置、分享、SOS、轨迹都可联调</span>
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('vehicles')}>
             <strong>车辆管理</strong>
@@ -1606,7 +1820,7 @@ function App() {
                 <div>
                   <strong style={{ fontSize: 15 }}>安全提醒</strong>
                   <div className="meta">
-                    紧急联系人已接入真实接口，SOS 和行程分享暂未开放后端路由，所以这里会明确标注。
+                    紧急联系人、安全配置、SOS、行程分享和轨迹摘要都已接入真实安全接口。
                   </div>
                 </div>
                 <StatusBadge label={yesNoLabel(tripDetail.safetyInfo.shareEnabled)} tone="info" />
@@ -2250,12 +2464,62 @@ function App() {
               <section className="strip" style={{ marginTop: 12, padding: 14 }}>
                 <div className="row">
                   <div>
-                    <strong style={{ fontSize: 15 }}>安全动作说明</strong>
+                    <strong style={{ fontSize: 15 }}>安全动作</strong>
                     <div className="meta">
-                      SOS、行程分享和轨迹摘要目前后端未挂路由，因此这里只展示说明，不会伪造一个“成功”的按钮。
+                      分享链接、SOS、轨迹上传和轨迹摘要都走真实安全接口，便于联调完整履约链路。
                     </div>
                   </div>
-                  <StatusBadge label="待接入" tone="info" />
+                  <StatusBadge label="已接入" tone="safe" />
+                </div>
+                <div className="status-band" style={{ marginTop: 12 }}>
+                  <div className="metric-pill">
+                    <strong>{formatDistance(safetyTraceSummary?.totalDistanceMeter ?? detail.trackSummary.totalDistanceMeter)}</strong>
+                    <span>轨迹距离</span>
+                  </div>
+                  <div className="metric-pill">
+                    <strong>{(safetyTraceSummary?.abnormalFlag ?? detail.trackSummary.abnormalFlag) ? '异常' : '正常'}</strong>
+                    <span>轨迹判断</span>
+                  </div>
+                  <div className="metric-pill">
+                    <strong>{detail.safetyActions.length}</strong>
+                    <span>可用动作</span>
+                  </div>
+                </div>
+                {safetyShareLink ? (
+                  <div className="detail-row" style={{ marginTop: 10 }}>
+                    <span>分享链接</span>
+                    <strong>{safetyShareLink.shareUrl}</strong>
+                  </div>
+                ) : null}
+                <div className="action-row wrap-row" style={{ marginTop: 12 }}>
+                  <button
+                    type="button"
+                    className="btn-soft"
+                    onClick={() => void handleCreateSafetyShareLink(detail.orderId)}
+                  >
+                    {busyAction === 'share-link' ? '生成中...' : '生成分享链接'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={() => void handleUploadTraceSample(detail.orderId)}
+                  >
+                    {busyAction === 'trace-upload' ? '上传中...' : '上传轨迹样本'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    onClick={() => void handleLoadTraceSummary(detail.orderId)}
+                  >
+                    {busyAction === 'trace-summary' ? '读取中...' : '刷新轨迹摘要'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => void handleCreateSafetySOS(detail.orderId)}
+                  >
+                    {busyAction === 'sos' ? '上报中...' : '上报 SOS'}
+                  </button>
                 </div>
               </section>
             </section>
@@ -2645,19 +2909,55 @@ function App() {
       <div className="content">
         <PhoneHeader
           eyebrow="安全中心"
-          title="把已接入与待接入能力明确分层"
-          subtitle="紧急联系人已连接真实接口；默认分享设置、SOS、行程分享和轨迹摘要目前后端还未开放，所以这里会坦诚展示。"
-          highlightValue={formatNumber(contacts.length)}
-          highlightLabel="联系人"
+          title="把分享、SOS 和轨迹真正串起来"
+          subtitle="紧急联系人、安全配置、行程分享、SOS 上报和轨迹摘要都已经接入真实后端接口。"
+          highlightValue={safetyConfig?.shareEnabled ? '开启' : '关闭'}
+          highlightLabel="默认分享"
         />
 
         <section className="hero-card">
           <div className="mini-note">真实接口能力</div>
-          <h2>紧急联系人可以直接增删</h2>
-          <p>当前后端列表只返回脱敏手机号，因此前端开放新增与删除；编辑能力等后端补充完整 DTO 后再继续增强。</p>
+          <h2>安全中心现在可以完成一次可验证闭环</h2>
+          <p>先维护默认联系人和记录开关，再选择一笔订单生成分享链接、上报 SOS、上传轨迹点并读取轨迹摘要。</p>
         </section>
 
-        <SectionHeading title="紧急联系人" description="已接入 GET / POST / DELETE" />
+        <SectionHeading title="默认安全配置" description="已接入 GET / PUT /api/v1/safety/config" />
+        <section className="panel" style={{ padding: 16, marginTop: 12 }}>
+          <div className="form-stack">
+            <label className="switch-line">
+              <input
+                type="checkbox"
+                checked={safetyConfigDraft.shareEnabled}
+                onChange={(event) =>
+                  setSafetyConfigDraft((current) => ({
+                    ...current,
+                    shareEnabled: event.target.checked,
+                  }))
+                }
+              />
+              默认开启行程分享
+            </label>
+            <label className="switch-line">
+              <input
+                type="checkbox"
+                checked={safetyConfigDraft.recordEnabled}
+                onChange={(event) =>
+                  setSafetyConfigDraft((current) => ({
+                    ...current,
+                    recordEnabled: event.target.checked,
+                  }))
+                }
+              />
+              允许紧急联系人查看轨迹摘要
+            </label>
+            <div className="meta">{safetyConfig?.recordNotice ?? '保存后会从真实配置接口读取最新安全说明。'}</div>
+            <button type="button" className="btn" onClick={() => void handleUpdateSafetyConfig()}>
+              {busyAction === 'safety-config' ? '保存中...' : '保存安全配置'}
+            </button>
+          </div>
+        </section>
+
+        <SectionHeading title="紧急联系人" description="已接入 GET / POST / DELETE，并可纳入默认分享名单" />
         {contacts.length === 0 ? (
           <EmptyState title="还没有紧急联系人" body="先新增一个默认联系人，后续订单页才能更自然地串上安全链路。" />
         ) : (
@@ -2673,6 +2973,14 @@ function App() {
                 {item.isDefault ? <StatusBadge label="默认" tone="safe" /> : null}
               </div>
               <div className="action-row">
+                <label className="switch-line">
+                  <input
+                    type="checkbox"
+                    checked={safetyConfigDraft.defaultShareContactIds.includes(item.id)}
+                    onChange={() => toggleSafetyContact(item.id)}
+                  />
+                  默认通知
+                </label>
                 <button
                   type="button"
                   className="btn-ghost"
@@ -2740,24 +3048,113 @@ function App() {
           </div>
         </section>
 
-        <SectionHeading title="待后端补齐的能力" description="这些区域已经把页面结构补齐，但目前不会伪造请求成功。" />
-        <section className="support-grid">
-          <div className="support-card">
-            <strong>默认分享设置</strong>
-            <span>`GET/PUT /api/v1/safety/config` 当前未挂路由，页面保留说明卡位。</span>
-          </div>
-          <div className="support-card">
-            <strong>SOS</strong>
-            <span>`POST /api/v1/safety/sos` 当前不可用，所以订单页只显示能力说明。</span>
-          </div>
-          <div className="support-card">
-            <strong>行程分享</strong>
-            <span>`POST /api/v1/safety/share-links` 未开放，先不伪造链接。</span>
-          </div>
-          <div className="support-card">
-            <strong>轨迹摘要</strong>
-            <span>{'`GET /api/v1/safety/trace-summary/{orderId}` 未挂路由，司机侧详情暂不展示轨迹指标。'}</span>
-          </div>
+        <SectionHeading title="订单安全动作" description="已接入分享链接、SOS、轨迹上传和轨迹摘要" />
+        <section className="panel" style={{ marginTop: 12, padding: 16 }}>
+          {safetyOrderOptions.length === 0 ? (
+            <div className="form-stack">
+              <strong>还没有可操作订单</strong>
+              <div className="meta">先走一次申请、接单和支付流程；有订单后这里会直接生成分享链接、SOS 和轨迹摘要。</div>
+              <button type="button" className="btn" onClick={() => navigate('orders')}>
+                去订单中心
+              </button>
+            </div>
+          ) : (
+            <div className="form-stack">
+              <label className="field">
+                <span>选择订单</span>
+                <select
+                  className="field-select"
+                  value={activeSafetyOrderId}
+                  onChange={(event) => {
+                    setSelectedSafetyOrderId(Number(event.target.value))
+                    setSafetyShareLink(null)
+                    setSafetyTraceSummary(null)
+                  }}
+                >
+                  {safetyOrderOptions.map((item) => (
+                    <option key={item.orderId} value={item.orderId}>
+                      {item.orderNo} · {item.routeSummary}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div className="status-band">
+                <div className="metric-pill">
+                  <strong>{safetyShareLink ? '已生成' : '待生成'}</strong>
+                  <span>分享链接</span>
+                </div>
+                <div className="metric-pill">
+                  <strong>{safetyTraceSummary ? formatDistance(safetyTraceSummary.totalDistanceMeter) : '--'}</strong>
+                  <span>轨迹距离</span>
+                </div>
+                <div className="metric-pill">
+                  <strong>{safetyTraceSummary ? (safetyTraceSummary.abnormalFlag ? '异常' : '正常') : '待读取'}</strong>
+                  <span>轨迹判断</span>
+                </div>
+              </div>
+
+              {safetyShareLink ? (
+                <div className="detail-row">
+                  <span>分享链接</span>
+                  <strong>{safetyShareLink.shareUrl}</strong>
+                </div>
+              ) : null}
+
+              <div className="row">
+                <input
+                  className="field-input"
+                  type="number"
+                  value={sosDraft.currentLat}
+                  onChange={(event) =>
+                    setSosDraft((current) => ({
+                      ...current,
+                      currentLat: Number(event.target.value),
+                    }))
+                  }
+                  placeholder="当前位置纬度"
+                />
+                <input
+                  className="field-input"
+                  type="number"
+                  value={sosDraft.currentLng}
+                  onChange={(event) =>
+                    setSosDraft((current) => ({
+                      ...current,
+                      currentLng: Number(event.target.value),
+                    }))
+                  }
+                  placeholder="当前位置经度"
+                />
+              </div>
+              <input
+                className="field-input"
+                value={sosDraft.remark}
+                onChange={(event) =>
+                  setSosDraft((current) => ({
+                    ...current,
+                    remark: event.target.value,
+                  }))
+                }
+                placeholder="SOS 备注"
+              />
+
+              <div className="action-row wrap-row">
+                <button type="button" className="btn-soft" onClick={() => void handleCreateSafetyShareLink()}>
+                  {busyAction === 'share-link' ? '生成中...' : '生成分享链接'}
+                </button>
+                <button type="button" className="btn-ghost" onClick={() => void handleUploadTraceSample()}>
+                  {busyAction === 'trace-upload' ? '上传中...' : '上传轨迹样本'}
+                </button>
+                <button type="button" className="btn-ghost" onClick={() => void handleLoadTraceSummary()}>
+                  {busyAction === 'trace-summary' ? '读取中...' : '刷新轨迹摘要'}
+                </button>
+                <button type="button" className="btn" onClick={() => void handleCreateSafetySOS()}>
+                  {busyAction === 'sos' ? '上报中...' : '上报 SOS'}
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         <BottomTabs activeTab={getPrimaryTab(route.view)} onNavigate={navigate} />
@@ -3318,8 +3715,8 @@ function App() {
             <span>登录、搜索、发布、接单、支付、履约、钱包都可接真接口。</span>
           </div>
           <div className="ambient-card">
-            <strong>诚实降级</strong>
-            <span>安全配置、SOS、分享链接仍会明确显示“待后端接入”。</span>
+            <strong>安全闭环</strong>
+            <span>安全配置、SOS、分享链接和轨迹摘要已接真实接口。</span>
           </div>
         </div>
       </section>
@@ -3400,7 +3797,7 @@ function App() {
                   <strong>{item.label}</strong>
                   <span>{item.summary}</span>
                 </div>
-                <em className={actionToneClass(item.mode === '真实接口' ? 'safe' : item.mode === '半接入' ? 'warn' : 'info')}>
+                <em className={actionToneClass(item.mode === '真实接口' ? 'safe' : 'info')}>
                   {item.mode}
                 </em>
               </button>
