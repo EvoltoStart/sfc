@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SFC Admin">
+  <rect width="64" height="64" rx="18" fill="#0f172a"/>
+  <path d="M18 39c5 5 23 5 28 0l-3-13c-1-5-5-8-11-8s-10 3-11 8l-3 13Z" fill="#f8fafc"/>
+  <path d="M23 39h18" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="24" cy="43" r="4" fill="#38bdf8"/>
+  <circle cx="40" cy="43" r="4" fill="#38bdf8"/>
+  <path d="M24 27h16" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+</svg>
