@@ -876,7 +876,11 @@ function OrdersPage(props: PageProps) {
         </Surface>
         <Surface title="订单详情" subtitle="详情来自 `/api/v1/admin/orders/{id}`。">
           <InfoList items={detailItems} compact />
-          <TimelineList items={props.data.orderDetail?.statusLogs?.map((item) => `${String(item.toStatus ?? item.status ?? '状态更新')} · ${formatDateTime(String(item.createdAt ?? ''))}`) ?? []} />
+          <TimelineList items={props.data.orderDetail?.statusLogs?.map((item) => {
+            const toStatus = String(item['toStatus'] ?? item['ToStatus'] ?? item['status'] ?? '状态更新')
+            const createdAt = String(item['createdAt'] ?? item['CreatedAt'] ?? '')
+            return `${toStatus} · ${formatDateTime(createdAt)}`
+          }) ?? []} />
         </Surface>
       </div>
     </div>
@@ -1445,8 +1449,8 @@ function PriorityList(props: { items: PriorityRecord[]; columns?: number; select
 function TimelineList(props: { items: string[] }) {
   return (
     <div className="timeline">
-      {props.items.map((item) => (
-        <div key={item} className="timeline-item">
+      {props.items.map((item, index) => (
+        <div key={`${item}-${index}`} className="timeline-item">
           <span />
           <p>{item}</p>
         </div>
