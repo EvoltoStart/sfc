@@ -1,5 +1,4 @@
-const env = require('../utils/env')
-const { get, post, request } = require('../utils/request')
+const { get, post } = require('../utils/request')
 
 function createPaymentOrder(orderId) {
   return post('/api/v1/payments/orders', { orderId })
@@ -10,16 +9,14 @@ function getPaymentStatus(orderId) {
 }
 
 function mockPaymentCallback(outTradeNo, payStatus) {
-  return request({
-    url: `${env.DEV_PROXY_ORIGIN}/__dev/mock-payment-callback`,
-    method: 'POST',
-    data: {
+  return post(
+    '/__dev/mock-payment-callback',
+    {
       outTradeNo,
       payStatus: payStatus || 'PAID',
     },
-    auth: false,
-    baseUrl: '',
-  })
+    { auth: false },
+  )
 }
 
 module.exports = {

@@ -62,6 +62,23 @@ func (h *Handler) paymentCallback(w http.ResponseWriter, r *http.Request) {
 	response.Success(w, r, result)
 }
 
+func (h *Handler) devPaymentCallback(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		OutTradeNo string `json:"outTradeNo"`
+		PayStatus  string `json:"payStatus"`
+	}
+	if appErr := decodeJSON(r, &req); appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	result, appErr := h.svc.PaymentCallback(req.OutTradeNo, req.PayStatus)
+	if appErr != nil {
+		response.Error(w, r, appErr)
+		return
+	}
+	response.Success(w, r, result)
+}
+
 func (h *Handler) alipayPaymentCallback(w http.ResponseWriter, r *http.Request) {
 	if _, appErr := h.svc.HandlePaymentNotification(r.Context(), r); appErr != nil {
 		http.Error(w, "failure", http.StatusBadRequest)
