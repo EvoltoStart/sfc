@@ -1,7 +1,6 @@
 param(
   [switch]$StopOnExit,
   [string]$BackendUrl = "http://127.0.0.1:8080",
-  [string]$ClientUrl = "http://127.0.0.1:4174",
   [string]$AdminUrl = "http://127.0.0.1:5174"
 )
 
@@ -9,7 +8,6 @@ $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ServerRoot = Join-Path $RepoRoot "server"
-$ClientRoot = Join-Path $RepoRoot "frontend\client-app"
 $AdminRoot = Join-Path $RepoRoot "frontend\admin-web"
 $ArtifactsRoot = Join-Path $RepoRoot "artifacts"
 $Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -99,8 +97,6 @@ $PythonCommand = Get-ToolCommand -Candidates @("python.exe", "python", "py.exe",
 
 $ServerLog = Join-Path $ArtifactsRoot "full-chain-server-$Timestamp.log"
 $ServerErr = Join-Path $ArtifactsRoot "full-chain-server-$Timestamp.err.log"
-$ClientLog = Join-Path $ArtifactsRoot "full-chain-client-web-$Timestamp.log"
-$ClientErr = Join-Path $ArtifactsRoot "full-chain-client-web-$Timestamp.err.log"
 $AdminLog = Join-Path $ArtifactsRoot "full-chain-admin-web-$Timestamp.log"
 $AdminErr = Join-Path $ArtifactsRoot "full-chain-admin-web-$Timestamp.err.log"
 $SmokeLog = Join-Path $ArtifactsRoot "full-chain-smoke-$Timestamp.log"
@@ -110,7 +106,7 @@ try {
   $env:SFC_SERVER_ADDR = "127.0.0.1:8080"
   $env:SFC_WECHAT_MINIAPP_FAKE_LOGIN = "true"
   $env:SFC_AMAP_FAKE = "true"
-  $env:SFC_SHARE_BASE_URL = "http://127.0.0.1:4174/share"
+  $env:SFC_SHARE_BASE_URL = "$BackendUrl/share"
   $env:SFC_SQLITE_PATH = Join-Path $ServerRoot "data\full-chain-local.db"
   $env:VITE_API_ORIGIN = $BackendUrl
 
@@ -127,19 +123,6 @@ try {
     Wait-HttpReady -Url "$BackendUrl/healthz" -TimeoutSeconds 90
   }
 
-  if (Test-HttpReady -Url $ClientUrl) {
-    Write-Host "Client Web already ready at $ClientUrl"
-  } else {
-    Start-LoggedProcess `
-      -Name "ClientWeb" `
-      -FilePath $NpmCommand `
-      -ArgumentList @("run", "dev", "--", "--host", "127.0.0.1", "--port", "4174") `
-      -WorkingDirectory $ClientRoot `
-      -StdoutPath $ClientLog `
-      -StderrPath $ClientErr | Out-Null
-    Wait-HttpReady -Url $ClientUrl -TimeoutSeconds 90
-  }
-
   if (Test-HttpReady -Url $AdminUrl) {
     Write-Host "Admin Web already ready at $AdminUrl"
   } else {
@@ -154,7 +137,6 @@ try {
   }
 
   Write-Host "BACKEND_URL=$BackendUrl"
-  Write-Host "CLIENT_WEB_URL=$ClientUrl"
   Write-Host "ADMIN_WEB_URL=$AdminUrl"
   Write-Host "SQLITE_PATH=$env:SFC_SQLITE_PATH"
 
