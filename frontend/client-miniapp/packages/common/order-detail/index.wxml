@@ -3,9 +3,9 @@
     <view class="header-card">
       <view class="topbar">
         <view>
-          <view class="hero-kicker">订单详情 · 真实链路</view>
+          <view class="hero-kicker">订单详情</view>
           <view class="hero-title">{{headerTitleText}}</view>
-          <view class="hero-desc">申请态和订单态共用一个详情入口，但动作会随真实后端状态变化。</view>
+          <view class="hero-desc">申请态和订单态共用详情入口，操作会随订单状态变化。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{headerKindText}}</text>
@@ -17,7 +17,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="订单详情需要真实账号和已创建的申请/订单。"
+      description="订单详情需要登录账号和已创建的申请或订单。"
       action-text="返回订单中心"
       bind:action="handleBack"
     />
@@ -35,14 +35,14 @@
           <view class="route-step__dot"></view>
           <view>
             <text class="route-step__title">{{joinDetail.startPoint.name}}</text>
-            <text class="route-step__desc">你的上车点，已通过真实申请接口提交。</text>
+            <text class="route-step__desc">你的上车点，申请时已提交。</text>
           </view>
         </view>
         <view class="route-step">
           <view class="route-step__dot route-step__dot--end"></view>
           <view>
             <text class="route-step__title">{{joinDetail.endPoint.name}}</text>
-            <text class="route-step__desc">目标终点。若司机接受，系统会自动生成真实订单。</text>
+            <text class="route-step__desc">目标终点。若司机接受，系统会自动生成订单。</text>
           </view>
         </view>
       </view>
@@ -105,7 +105,7 @@
           <view class="route-step__dot route-step__dot--end"></view>
           <view>
             <text class="route-step__title">{{orderDetail.routeInfo.endName}}</text>
-            <text class="route-step__desc">轨迹摘要 {{orderView.trackDistanceText}}，到达后会进入真实结算链路。</text>
+            <text class="route-step__desc">轨迹摘要 {{orderView.trackDistanceText}}，到达后会进入结算流程。</text>
           </view>
         </view>
       </view>

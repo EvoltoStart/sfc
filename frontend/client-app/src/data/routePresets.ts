@@ -23,7 +23,7 @@ export const routePresets: RoutePreset[] = [
     endLat: 30.2907,
     endLng: 120.2124,
     timePeriod: '午后返程',
-    suggestion: '适合乘客搜索和车主日常通勤演示，页面风格也与设计稿最接近。',
+    suggestion: '午后返程需求稳定，适合快速找到同向车主。',
     departOffsetHours: 3,
   },
   {
@@ -36,7 +36,7 @@ export const routePresets: RoutePreset[] = [
     endLat: 23.1291,
     endLng: 113.2644,
     timePeriod: '工作日晚高峰',
-    suggestion: '这是后端测试里验证过的主链路城市组合，适合稳定联调。',
+    suggestion: '工作日晚高峰车流密集，建议提前筛选顺路度更高的行程。',
     departOffsetHours: 4,
   },
   {
@@ -49,7 +49,7 @@ export const routePresets: RoutePreset[] = [
     endLat: 39.1172,
     endLng: 117.2,
     timePeriod: '城际顺风车',
-    suggestion: '适合验证支付、上车确认和到达确认整条履约链路。',
+    suggestion: '城际距离较长，建议优先选择评价稳定且座位充足的车主。',
     departOffsetHours: 5,
   },
   {
@@ -62,7 +62,7 @@ export const routePresets: RoutePreset[] = [
     endLat: 32.0603,
     endLng: 118.7969,
     timePeriod: '周末城际',
-    suggestion: '适合验证车主接受申请并生成正式订单的闭环。',
+    suggestion: '周末跨城出行集中，建议先确认上车点和行李空间。',
     departOffsetHours: 6,
   },
   {
@@ -75,7 +75,7 @@ export const routePresets: RoutePreset[] = [
     endLat: 31.2304,
     endLng: 121.4737,
     timePeriod: '高频往返',
-    suggestion: '适合验证发布频控限制和异常提示。',
+    suggestion: '高频往返线路，建议关注发车时间和剩余座位。',
     departOffsetHours: 7,
   },
 ]
@@ -85,7 +85,7 @@ export interface StaticCoupon {
   title: string
   amountText: string
   rule: string
-  status: '可用' | '即将到期' | '待后端接入'
+  status: '可用' | '即将到期' | '已使用'
 }
 
 export const staticCoupons: StaticCoupon[] = [
@@ -93,15 +93,22 @@ export const staticCoupons: StaticCoupon[] = [
     id: 'coupon-1',
     title: '新客顺路立减券',
     amountText: '¥12',
-    rule: '真实后端暂未开放优惠券接口，当前用于占位展示页面结构。',
-    status: '待后端接入',
+    rule: '适用于 30 元以上同行订单，支付时自动抵扣。',
+    status: '可用',
   },
   {
     id: 'coupon-2',
     title: '周末返程券',
     amountText: '95 折',
-    rule: '后续可在支付确认页和订单页联动使用。',
-    status: '待后端接入',
+    rule: '周五 18:00 至周日 23:59 出发的城际订单可用。',
+    status: '即将到期',
+  },
+  {
+    id: 'coupon-3',
+    title: '安全同行券',
+    amountText: '¥8',
+    rule: '完成实名认证后可用于下一笔夜间同行订单。',
+    status: '可用',
   },
 ]
 
@@ -115,16 +122,16 @@ export const faqItems: FaqItem[] = [
   {
     id: 'help-1',
     question: '为什么发布行程会提示车主未认证？',
-    answer: '当前后端要求驾驶证审核通过且至少存在一辆审核通过的车辆，两个条件同时满足后才能发布行程。',
+    answer: '发布前需要驾驶证审核通过，并至少有一辆审核通过的车辆。',
   },
   {
     id: 'help-2',
-    question: '安全中心现在可以验证哪些能力？',
-    answer: '默认分享配置、紧急联系人、行程分享链接、SOS 上报、轨迹点上传和轨迹摘要都已经接入真实后端接口。',
+    question: '行程中遇到异常怎么办？',
+    answer: '订单详情页保留分享、SOS 和联系入口，紧急联系人与平台安全岗会收到必要的行程信息。',
   },
   {
     id: 'help-3',
-    question: '本地怎么验证支付成功后的履约流程？',
-    answer: '支付单创建后，可以使用页面里的“模拟支付成功”按钮触发本地开发代理，它会代你生成签名并调用真实后端回调。',
+    question: '支付后费用什么时候结算给车主？',
+    answer: '乘客确认上车与到达后，系统按订单状态完成结算，取消或异常订单会进入退款处理。',
   },
 ]

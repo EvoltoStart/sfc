@@ -145,32 +145,32 @@ interface PageCatalogItem {
   view: AppView
   label: string
   summary: string
-  mode: '真实接口' | '静态占位'
+  mode: '可操作' | '静态内容'
 }
 
 const defaultPreset = routePresets[0]
 
 const pageCatalog: PageCatalogItem[] = [
-  { view: 'home', label: '首页搜索', summary: '乘客搜索与车主快捷入口', mode: '真实接口' },
-  { view: 'matches', label: '匹配列表', summary: '真实匹配结果列表', mode: '真实接口' },
-  { view: 'trip-detail', label: '行程详情', summary: '查看司机、价格与顺路度', mode: '真实接口' },
-  { view: 'orders', label: '订单中心', summary: '乘客与车主多视角订单页', mode: '真实接口' },
-  { view: 'order-detail', label: '订单详情', summary: '申请态与订单态详情动作', mode: '真实接口' },
-  { view: 'payment', label: '支付确认', summary: '真实支付单 + 本地回调联调', mode: '真实接口' },
-  { view: 'publish', label: '发布行程', summary: '价格预览、顺路校验、发单', mode: '真实接口' },
-  { view: 'safety', label: '安全中心', summary: '安全配置、分享、SOS、轨迹摘要均接真实接口', mode: '真实接口' },
-  { view: 'profile', label: '我的', summary: '资料、实名认证、司机能力入口', mode: '真实接口' },
-  { view: 'vehicles', label: '车辆管理', summary: '新增车辆与默认车辆设置', mode: '真实接口' },
-  { view: 'license', label: '驾驶证认证', summary: '提交驾驶证并刷新认证状态', mode: '真实接口' },
-  { view: 'wallet', label: '钱包', summary: '司机收入账户与流水', mode: '真实接口' },
-  { view: 'coupons', label: '优惠券', summary: '页面完整展示，等待后端接口补齐', mode: '静态占位' },
-  { view: 'help', label: '帮助中心', summary: '联调 FAQ 与产品说明', mode: '静态占位' },
+  { view: 'home', label: '首页搜索', summary: '乘客搜索与车主快捷入口', mode: '可操作' },
+  { view: 'matches', label: '匹配列表', summary: '按顺路度查看候选车主', mode: '可操作' },
+  { view: 'trip-detail', label: '行程详情', summary: '查看司机、价格与安全信息', mode: '可操作' },
+  { view: 'orders', label: '订单中心', summary: '乘客与车主多视角订单页', mode: '可操作' },
+  { view: 'order-detail', label: '订单详情', summary: '处理申请、支付与履约动作', mode: '可操作' },
+  { view: 'payment', label: '支付确认', summary: '创建支付单并跟进支付状态', mode: '可操作' },
+  { view: 'publish', label: '发布行程', summary: '价格预览、顺路校验、发单', mode: '可操作' },
+  { view: 'safety', label: '安全中心', summary: '联系人、分享、SOS、轨迹摘要', mode: '可操作' },
+  { view: 'profile', label: '我的', summary: '资料、实名认证、司机能力入口', mode: '可操作' },
+  { view: 'vehicles', label: '车辆管理', summary: '新增车辆与默认车辆设置', mode: '可操作' },
+  { view: 'license', label: '驾驶证认证', summary: '提交驾驶证并查看审核状态', mode: '可操作' },
+  { view: 'wallet', label: '钱包', summary: '司机收入账户与流水', mode: '可操作' },
+  { view: 'coupons', label: '优惠券', summary: '查看可用权益和使用规则', mode: '静态内容' },
+  { view: 'help', label: '帮助中心', summary: '订单、支付、安全常见问题', mode: '静态内容' },
 ]
 
 const backendCapabilityNotes = [
-  '已接入真实接口：登录、资料、实名认证、紧急联系人、车辆、驾驶证、价格预览、顺路校验、发布行程、搜索匹配、同行申请、司机接单、订单、支付、钱包。',
-  '安全能力已接入真实接口：默认分享设置、行程分享链接、SOS 上报、轨迹点上传和轨迹摘要都能走后端闭环。',
-  '常用路线列表接口当前只返回名称摘要，不返回经纬度，所以前端保留“保存常用路线”，但搜索和发布仍使用本地路线预设来驱动真实联调。',
+  '主链路覆盖登录、资料、实名认证、车辆、驾驶证、价格预览、发布行程、搜索匹配、同行申请、司机接单、订单、支付与钱包。',
+  '安全中心可管理紧急联系人、默认分享设置、行程分享链接、SOS 上报、轨迹上传和轨迹摘要。',
+  '常用路线用于快速填充起终点；搜索和发布仍以当前表单中的路线、时间与座位为准。',
 ]
 
 const quickLoginCodes = [
@@ -911,7 +911,7 @@ function App() {
       setLoginCode(trimmed)
       setProfile(result.profile)
       setRolePreference(nextRolePreference)
-      pushToast(`已接入真实后端，当前账号：${trimmed}`, 'success')
+      pushToast(`已登录：${trimmed}`, 'success')
     } catch (error) {
       handleError(error, '登录失败')
     } finally {
@@ -951,7 +951,7 @@ function App() {
       })
       setMatches(result.list)
       navigate('matches')
-      pushToast(`搜索完成，共匹配 ${result.list.length} 条真实行程`, 'success')
+      pushToast(`搜索完成，共匹配 ${result.list.length} 条行程`, 'success')
     } catch (error) {
       handleError(error, '搜索匹配失败')
     } finally {
@@ -980,7 +980,7 @@ function App() {
         kind: 'join',
         id: String(result.joinRequestId),
       })
-      pushToast('同行申请已提交，已接入真实后端记录', 'success')
+      pushToast('同行申请已提交', 'success')
     } catch (error) {
       handleError(error, '提交同行申请失败')
     } finally {
@@ -1020,7 +1020,7 @@ function App() {
         passed: score.passed,
         message: score.message,
       })
-      pushToast('已刷新真实价格和顺路度建议', 'success')
+      pushToast('已刷新价格和顺路度建议', 'success')
     } catch (error) {
       handleError(error, '预览价格失败')
     } finally {
@@ -1050,7 +1050,7 @@ function App() {
       setRolePreference('DRIVER')
       await refreshDriverOrderCenter()
       navigate('orders')
-      pushToast(`行程发布成功，真实 tripId=${result.tripId}`, 'success')
+      pushToast(`行程发布成功，编号 ${result.tripId}`, 'success')
     } catch (error) {
       handleError(error, '发布行程失败')
     } finally {
@@ -1075,7 +1075,7 @@ function App() {
       })
       const templates = await api.listRouteTemplates()
       setRouteTemplates(templates.list)
-      pushToast('当前路线已保存到真实后端', 'success')
+      pushToast('当前路线已保存', 'success')
     } catch (error) {
       handleError(error, '保存常用路线失败')
     } finally {
@@ -1102,7 +1102,7 @@ function App() {
       await api.submitRealname(realnameDraft)
       const status = await api.getRealnameStatus()
       setRealnameStatus(status)
-      pushToast('实名认证已提交到真实后端', 'success')
+      pushToast('实名认证已提交', 'success')
     } catch (error) {
       handleError(error, '提交实名认证失败')
     } finally {
@@ -1165,7 +1165,7 @@ function App() {
     try {
       await api.updateSafetyConfig(safetyConfigDraft)
       await loadSafetyConfig()
-      pushToast('安全配置已保存到真实后端', 'success')
+      pushToast('安全配置已保存', 'success')
     } catch (error) {
       handleError(error, '保存安全配置失败')
     } finally {
@@ -1284,7 +1284,7 @@ function App() {
       }
       const refreshedProfile = await api.getProfile()
       setProfile(refreshedProfile)
-      pushToast('车辆已提交，真实接口返回成功', 'success')
+      pushToast('车辆已提交', 'success')
     } catch (error) {
       handleError(error, '新增车辆失败')
     } finally {
@@ -1322,7 +1322,7 @@ function App() {
       setLicenseStatus(status)
       setProfile(refreshedProfile)
       setDriverProfile(refreshedDriverProfile)
-      pushToast('驾驶证已提交到真实后端', 'success')
+      pushToast('驾驶证已提交', 'success')
     } catch (error) {
       handleError(error, '提交驾驶证失败')
     } finally {
@@ -1367,7 +1367,7 @@ function App() {
         kind: 'order',
         id: String(result.orderId),
       })
-      pushToast('已接受乘客申请，并生成真实订单', 'success')
+      pushToast('已接受乘客申请，并生成订单', 'success')
     } catch (error) {
       handleError(error, '接受乘客申请失败')
     } finally {
@@ -1412,7 +1412,7 @@ function App() {
       setPaymentOrder(result)
       const status = await api.getPaymentStatus(orderId)
       setPaymentStatus(status)
-      pushToast('支付单已创建，可继续模拟支付回调', 'success')
+      pushToast('支付单已创建，可继续确认支付结果', 'success')
     } catch (error) {
       handleError(error, '创建支付单失败')
     } finally {
@@ -1436,9 +1436,9 @@ function App() {
       setPaymentStatus(status)
       await refreshPassengerOrderCenter()
       await refreshDriverOrderCenter()
-      pushToast('已通过本地代理触发真实支付回调', 'success')
+      pushToast('支付状态已更新', 'success')
     } catch (error) {
-      handleError(error, '模拟支付回调失败')
+      handleError(error, '支付结果确认失败')
     } finally {
       setBusyAction('')
     }
@@ -1489,27 +1489,27 @@ function App() {
     return (
       <div className="content">
         <PhoneHeader
-          eyebrow="真实后端联调"
+          eyebrow="顺风车"
           title="顺风车客户端"
-          subtitle="前端代码已经独立放在 frontend/client-app。现在这个界面不再是设计稿工作台，而是直接连真实 Go 后端的可运行客户端。"
+          subtitle="登录后可搜索同行、发布行程、处理订单、查看钱包与安全设置。"
           highlightValue="API"
           highlightLabel={`已接 ${apiOriginLabel}`}
         />
 
         <section className="hero-card">
-          <div className="mini-note">本地联调优先走乘客与车主双闭环</div>
-          <h1>先登录一个乘客或车主账号，立刻开始真实接口测试</h1>
+          <div className="mini-note">乘客与车主共用账号体系</div>
+          <h1>先登录账号，开始一次完整同行流程</h1>
           <p>
-            后端 `wx-login` 会按 code 自动创建或复用用户，所以这里支持任意字符串登录。为了便于联调，右侧也保留了快捷账号和流程提示。
+            可使用快捷账号，也可以输入自定义登录码。登录后会保留当前会话，并按账号状态开放乘客或车主能力。
           </p>
           <div className="hero-metrics">
             <div className="metric-pill">
               <strong>19</strong>
-              <span>已对齐设计页</span>
+              <span>客户端页面</span>
             </div>
             <div className="metric-pill">
               <strong>13+</strong>
-              <span>真实业务接口</span>
+              <span>业务动作</span>
             </div>
             <div className="metric-pill">
               <strong>本地</strong>
@@ -1535,12 +1535,12 @@ function App() {
               onClick={() => void handleLogin(loginCode)}
               disabled={busyAction === 'login'}
             >
-              {busyAction === 'login' ? '登录中...' : '真实接口登录'}
+              {busyAction === 'login' ? '登录中...' : '登录'}
             </button>
           </div>
         </section>
 
-        <SectionHeading title="快捷账号" description="这些账号名只是建议，你也可以直接输入任意 code。" />
+        <SectionHeading title="快捷账号" description="用于快速进入乘客或车主视角。" />
         <section className="support-grid">
           {quickLoginCodes.map((item) => (
             <button
@@ -1567,7 +1567,7 @@ function App() {
     return (
       <div className="content">
         <PhoneHeader
-          eyebrow={`${roleLabel(currentRole)} · 已接真实接口`}
+          eyebrow={roleLabel(currentRole)}
           title="今天想顺着哪一阵风出发？"
           subtitle={roleSummary}
           highlightValue={currentRole === 'DRIVER' ? formatNumber(driverTrips.length) : formatNumber(matches.length)}
@@ -1579,7 +1579,7 @@ function App() {
           <h2>{currentPreset.routeName}</h2>
           <p>{currentPreset.suggestion}</p>
           <div className="chips">
-            <span className="chip">路线预设驱动真实经纬度</span>
+            <span className="chip">路线预设已填充经纬度</span>
             <span className="chip">顺路度门槛 {searchDraft.minRouteScore}%</span>
             <span className="chip">安全中心已接分享、SOS、轨迹摘要</span>
           </div>
@@ -1645,7 +1645,7 @@ function App() {
           </div>
           <div className="action-row">
             <button type="button" className="btn" onClick={() => void handleSearchMatches()}>
-              {busyAction === 'search' ? '搜索中...' : '查看真实匹配'}
+              {busyAction === 'search' ? '搜索中...' : '查看顺路车主'}
             </button>
             <button type="button" className="btn-ghost" onClick={() => navigate('orders')}>
               去订单中心
@@ -1661,7 +1661,7 @@ function App() {
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('safety')}>
             <strong>安全中心</strong>
-            <span>配置、分享、SOS、轨迹都可联调</span>
+            <span>管理联系人、分享、SOS 与轨迹</span>
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('vehicles')}>
             <strong>车辆管理</strong>
@@ -1669,7 +1669,7 @@ function App() {
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('wallet')}>
             <strong>司机钱包</strong>
-            <span>履约完成后能看到真实入账</span>
+            <span>履约完成后查看入账</span>
           </button>
         </section>
 
@@ -1683,8 +1683,8 @@ function App() {
       <div className="content">
         <PhoneHeader
           eyebrow="乘客匹配列表"
-          title="真实匹配结果"
-          subtitle="排序来自后端搜索接口，费用来自真实估价逻辑。这里展示的是可以直接申请同行的候选行程。"
+          title="顺路车主"
+          subtitle="按顺路度、时间偏差和费用展示可申请同行的行程。"
           highlightValue={formatNumber(matches.length)}
           highlightLabel="匹配数"
         />
@@ -1692,7 +1692,7 @@ function App() {
         {matches.length === 0 ? (
           <EmptyState
             title="还没有可展示的匹配结果"
-            body="先回到首页发起一次搜索。当前页面只承接真实接口搜索结果，不再展示静态设计稿。"
+            body="回到首页选择路线和出发时间后，再查看可同行的车主。"
             action={
               <button type="button" className="btn" onClick={() => navigate('home')}>
                 回首页搜索
@@ -1712,7 +1712,7 @@ function App() {
                     <div className="avatar">{item.driverInfo.nickname.slice(0, 1)}</div>
                     <div>
                       <div className="driver-name">{item.driverInfo.nickname}</div>
-                      <div className="meta">真实司机 ID：{item.driverInfo.userId}</div>
+                      <div className="meta">司机 ID：{item.driverInfo.userId}</div>
                     </div>
                   </div>
                   <StatusBadge label={`顺路 ${formatPercent(item.routeScore)}`} tone="safe" />
@@ -1767,7 +1767,7 @@ function App() {
         <PhoneHeader
           eyebrow="行程详情"
           title={tripDetail ? `${tripDetail.routeInfo.startName} → ${tripDetail.routeInfo.endName}` : '加载中'}
-          subtitle="这里承接真实 trip 详情接口，费用、顺路度、剩余座位都会跟后端一致。"
+          subtitle="费用、顺路度、剩余座位和安全信息会随当前行程更新。"
           highlightValue={tripDetail ? formatPercent(tripDetail.routeScore) : '--'}
           highlightLabel="顺路度"
         />
@@ -1777,9 +1777,9 @@ function App() {
         ) : (
           <>
             <section className="hero-card">
-              <div className="mini-note">真实行程 ID：{tripDetail.tripId}</div>
+              <div className="mini-note">行程 ID：{tripDetail.tripId}</div>
               <h2>{tripDetail.driverInfo.nickname}</h2>
-              <p>当前页面已经接入司机、路线、价格和安全摘要，不再依赖静态 HTML 预览。</p>
+              <p>司机、路线、价格和安全摘要集中展示，便于申请前快速确认。</p>
               <div className="hero-metrics">
                 <div className="metric-pill">
                   <strong>{formatMoney(tripDetail.priceInfo.totalFeeFen)}</strong>
@@ -1820,7 +1820,7 @@ function App() {
                 <div>
                   <strong style={{ fontSize: 15 }}>安全提醒</strong>
                   <div className="meta">
-                    紧急联系人、安全配置、SOS、行程分享和轨迹摘要都已接入真实安全接口。
+                    紧急联系人、安全配置、SOS、行程分享和轨迹摘要都可在订单内使用。
                   </div>
                 </div>
                 <StatusBadge label={yesNoLabel(tripDetail.safetyInfo.shareEnabled)} tone="info" />
@@ -1832,7 +1832,7 @@ function App() {
                 返回列表
               </button>
               <button type="button" className="btn" onClick={() => void handleCreateJoinRequest()}>
-                {busyAction === 'join-request' ? '提交中...' : '发起真实申请'}
+                {busyAction === 'join-request' ? '提交中...' : '申请同行'}
               </button>
             </div>
           </>
@@ -1853,7 +1853,7 @@ function App() {
     const passengerPanels: Record<PassengerOrderTab, ReactNode> = {
       requests:
         passengerRequests.length === 0 ? (
-          <EmptyState title="暂无同行申请" body="从首页搜索一条真实行程，提交申请后会在这里看到记录。" />
+          <EmptyState title="暂无同行申请" body="从首页搜索行程并提交申请后，会在此显示处理进度。" />
         ) : (
           <>
             {passengerRequests.map((item) => {
@@ -1908,7 +1908,7 @@ function App() {
         ),
       orders:
         passengerOrders.length === 0 ? (
-          <EmptyState title="暂无正式订单" body="当司机接受你的申请后，这里会生成真实 ride_order 记录。" />
+          <EmptyState title="暂无正式订单" body="司机接受申请后，正式订单会显示在此处。" />
         ) : (
           <>
             {passengerOrders.map((item) => {
@@ -1986,7 +1986,7 @@ function App() {
         driverTrips.length === 0 ? (
           <EmptyState
             title="还没有发布过行程"
-            body="完成驾驶证和车辆准备后，就可以在发布页创建真实 trip 记录。"
+            body="完成驾驶证和车辆准备后，就可以在发布页创建行程。"
             action={
               <button type="button" className="btn" onClick={() => navigate('publish')}>
                 去发布行程
@@ -2049,7 +2049,7 @@ function App() {
         ),
       requests:
         driverRequests.length === 0 ? (
-          <EmptyState title="暂无乘客申请" body="乘客提交同行申请后，这里会显示真实待处理列表。" />
+          <EmptyState title="暂无乘客申请" body="乘客提交同行申请后，会在此显示待处理列表。" />
         ) : (
           <>
             {driverRequests.map((item) => {
@@ -2120,7 +2120,7 @@ function App() {
         ),
       orders:
         driverOrders.length === 0 ? (
-          <EmptyState title="暂无司机侧订单" body="接受乘客申请后，这里会展示真实订单和履约状态。" />
+          <EmptyState title="暂无司机侧订单" body="接受乘客申请后，会在此展示订单和履约状态。" />
         ) : (
           <>
             {driverOrders.map((item) => {
@@ -2169,8 +2169,8 @@ function App() {
           title={showDriverMode ? '把接单、履约和结算放在一页看清楚' : '把申请、支付和履约拆成清晰的四个时刻'}
           subtitle={
             showDriverMode
-              ? '这里聚合我的行程、乘客申请和司机订单，方便直接完成真实联调闭环。'
-              : '当前页面同时展示同行申请和正式订单，列表都来自真实接口。'
+              ? '我的行程、乘客申请和司机订单集中在同一页，便于连续处理。'
+              : '同行申请和正式订单分开展示，方便判断当前状态。'
           }
           highlightValue={
             showDriverMode
@@ -2185,8 +2185,8 @@ function App() {
           <h2>{showDriverMode ? '行程、申请、订单，司机侧全部收口' : '申请态与订单态并列展示，不让信息断层'}</h2>
           <p>
             {showDriverMode
-              ? '接受乘客申请后会自动生成正式订单；支付成功、确认上车和确认到达后，司机钱包会真实入账。'
-              : '待车主确认的记录仍然是 join_request，只有被接受后才会进入 ride_order，这里会诚实地区分两类数据。'}
+              ? '接受乘客申请后会生成正式订单；支付成功、确认上车和确认到达后，司机钱包会入账。'
+              : '待车主确认的申请和已生成的正式订单分开展示，避免误操作。'}
           </p>
         </section>
 
@@ -2251,7 +2251,7 @@ function App() {
           )}
         </div>
 
-        {pageLoading === 'orders' ? <EmptyState title="正在拉取订单中心" body="正在读取真实后端数据..." /> : null}
+        {pageLoading === 'orders' ? <EmptyState title="正在拉取订单中心" body="正在刷新订单数据..." /> : null}
         {showDriverMode ? driverPanels[driverOrderTab] : passengerPanels[passengerOrderTab]}
 
         <BottomTabs activeTab={getPrimaryTab(route.view)} onNavigate={navigate} />
@@ -2313,7 +2313,7 @@ function App() {
                     </div>
                     <div className="metric-pill">
                       <strong>{meta.label}</strong>
-                      <span>后端状态</span>
+                      <span>系统状态</span>
                     </div>
                   </div>
                 </section>
@@ -2386,7 +2386,7 @@ function App() {
         <PhoneHeader
           eyebrow={currentRole === 'DRIVER' ? '司机订单详情' : '乘客订单详情'}
           title={detail ? `订单 ${detail.orderNo}` : '加载中'}
-          subtitle="这页承接正式 ride_order 的履约和支付链路。下方按钮都是真实请求，不是静态演示。"
+          subtitle="正式订单的支付、上车、到达和取消动作集中在此处理。"
           highlightValue={detail ? orderMeta.label : '--'}
           highlightLabel="订单状态"
         />
@@ -2466,7 +2466,7 @@ function App() {
                   <div>
                     <strong style={{ fontSize: 15 }}>安全动作</strong>
                     <div className="meta">
-                      分享链接、SOS、轨迹上传和轨迹摘要都走真实安全接口，便于联调完整履约链路。
+                      分享链接、SOS、轨迹上传和轨迹摘要可辅助处理行程异常。
                     </div>
                   </div>
                   <StatusBadge label="已接入" tone="safe" />
@@ -2591,7 +2591,7 @@ function App() {
         <PhoneHeader
           eyebrow="支付确认"
           title={detail ? `支付订单 ${detail.orderNo}` : '加载中'}
-          subtitle="真实支付单创建成功后，这里可以通过本地开发代理模拟微信回调，让订单真正进入待上车状态。"
+          subtitle="创建支付单后，可确认支付状态并继续进入上车确认。"
           highlightValue={paymentMeta.label}
           highlightLabel="支付状态"
         />
@@ -2601,9 +2601,9 @@ function App() {
         ) : (
           <>
             <section className="hero-card">
-              <div className="mini-note">真实 orderId：{detail.orderId}</div>
+              <div className="mini-note">订单 ID：{detail.orderId}</div>
               <h2>{detail.routeInfo.startName} → {detail.routeInfo.endName}</h2>
-              <p>如果先创建支付单，再点击“模拟支付成功”，后端会执行真实回调处理并更新订单状态。</p>
+              <p>创建支付单后，支付结果会回写到订单状态，后续可继续确认上车与到达。</p>
               <div className="hero-metrics">
                 <div className="metric-pill">
                   <strong>{formatMoney(detail.priceInfo.payableAmountFen)}</strong>
@@ -2636,27 +2636,27 @@ function App() {
             </section>
 
             <section className="notice-card" style={{ marginTop: 12 }}>
-              <strong>联调说明</strong>
+              <strong>支付流程</strong>
               <div className="notice-list">
                 <div className="notice-item">
                   <div className="notice-dot">1</div>
                   <div>
                     <strong>先创建支付单</strong>
-                    <span>真实接口会返回支付单号和过期时间。</span>
+                    <span>系统会返回支付单号和过期时间。</span>
                   </div>
                 </div>
                 <div className="notice-item">
                   <div className="notice-dot">2</div>
                   <div>
-                    <strong>再模拟支付成功</strong>
-                    <span>本地开发代理会为你生成签名，再调用真实支付回调接口。</span>
+                    <strong>再确认支付成功</strong>
+                    <span>支付成功后订单进入待上车状态。</span>
                   </div>
                 </div>
                 <div className="notice-item">
                   <div className="notice-dot">3</div>
                   <div>
                     <strong>刷新订单状态</strong>
-                    <span>成功后订单会从待支付进入待上车，后续就能确认上车与到达。</span>
+                    <span>成功后订单会从待支付进入待上车，可继续确认上车与到达。</span>
                   </div>
                 </div>
               </div>
@@ -2668,7 +2668,7 @@ function App() {
                 className="btn-soft"
                 onClick={() => void handleCreatePaymentOrder(detail.orderId)}
               >
-                {busyAction === 'create-payment' ? '创建中...' : '创建真实支付单'}
+                {busyAction === 'create-payment' ? '创建中...' : '创建支付单'}
               </button>
               <button
                 type="button"
@@ -2676,7 +2676,7 @@ function App() {
                 onClick={() => void handleMockPayment()}
                 disabled={!paymentOrder}
               >
-                {busyAction === 'mock-payment' ? '回调中...' : '模拟支付成功'}
+                {busyAction === 'mock-payment' ? '确认中...' : '确认支付成功'}
               </button>
             </div>
 
@@ -2711,7 +2711,7 @@ function App() {
         <PhoneHeader
           eyebrow="车主发布页"
           title="把路线、座位和规则一次说清楚"
-          subtitle="价格预览、顺路度校验和发布动作都走真实接口。如果当前还不是合格车主，页面会先把缺少的条件讲清楚。"
+          subtitle="价格预览、顺路度校验和发布动作集中处理；未满足条件时会显示缺失项。"
           highlightValue={publishRouteScore ? formatPercent(publishRouteScore.score) : '--'}
           highlightLabel="顺路度"
         />
@@ -2719,8 +2719,8 @@ function App() {
         {!driverReady ? (
           <section className="hero-card">
             <div className="mini-note">发布前校验</div>
-            <h2>当前账号还不能直接发布真实行程</h2>
-            <p>后端要求“驾驶证审核通过 + 至少一辆审核通过的车辆”。你可以先去完善认证，然后再回来发布。</p>
+            <h2>当前账号还不能发布行程</h2>
+            <p>发布前需要驾驶证审核通过，并至少有一辆审核通过的车辆。</p>
             <div className="hero-metrics">
               <div className="metric-pill">
                 <strong>{licenseMeta.label}</strong>
@@ -2848,7 +2848,7 @@ function App() {
           </div>
           <div className="recommend-band">
             <strong>当前判断</strong>
-            <span>{publishRouteScore?.message ?? '点击“刷新建议”后，实时读取价格和顺路度接口。'}</span>
+            <span>{publishRouteScore?.message ?? '点击“刷新建议”后查看价格和顺路度。'}</span>
           </div>
         </section>
 
@@ -2858,7 +2858,7 @@ function App() {
             <strong>{routeTemplates.length} 条</strong>
           </div>
           <div className="meta" style={{ marginTop: 8 }}>
-            当前后端列表只返回名称摘要，不返回经纬度，所以这里把常用路线当作历史记录展示，不直接作为发布表单数据源。
+            常用路线作为历史记录展示；发布时仍以当前表单的起终点为准。
           </div>
           <div className="template-list">
             {routeTemplates.length === 0 ? (
@@ -2910,13 +2910,13 @@ function App() {
         <PhoneHeader
           eyebrow="安全中心"
           title="把分享、SOS 和轨迹真正串起来"
-          subtitle="紧急联系人、安全配置、行程分享、SOS 上报和轨迹摘要都已经接入真实后端接口。"
+          subtitle="管理紧急联系人、默认分享设置、SOS 和轨迹摘要。"
           highlightValue={safetyConfig?.shareEnabled ? '开启' : '关闭'}
           highlightLabel="默认分享"
         />
 
         <section className="hero-card">
-          <div className="mini-note">真实接口能力</div>
+          <div className="mini-note">安全能力</div>
           <h2>安全中心现在可以完成一次可验证闭环</h2>
           <p>先维护默认联系人和记录开关，再选择一笔订单生成分享链接、上报 SOS、上传轨迹点并读取轨迹摘要。</p>
         </section>
@@ -2950,7 +2950,7 @@ function App() {
               />
               允许紧急联系人查看轨迹摘要
             </label>
-            <div className="meta">{safetyConfig?.recordNotice ?? '保存后会从真实配置接口读取最新安全说明。'}</div>
+            <div className="meta">{safetyConfig?.recordNotice ?? '保存后会显示最新安全设置。'}</div>
             <button type="button" className="btn" onClick={() => void handleUpdateSafetyConfig()}>
               {busyAction === 'safety-config' ? '保存中...' : '保存安全配置'}
             </button>
@@ -2959,7 +2959,7 @@ function App() {
 
         <SectionHeading title="紧急联系人" description="已接入 GET / POST / DELETE，并可纳入默认分享名单" />
         {contacts.length === 0 ? (
-          <EmptyState title="还没有紧急联系人" body="先新增一个默认联系人，后续订单页才能更自然地串上安全链路。" />
+          <EmptyState title="还没有紧急联系人" body="先新增一个默认联系人，订单中可直接使用安全能力。" />
         ) : (
           contacts.map((item) => (
             <section className="menu-card" key={item.id}>
@@ -3053,7 +3053,7 @@ function App() {
           {safetyOrderOptions.length === 0 ? (
             <div className="form-stack">
               <strong>还没有可操作订单</strong>
-              <div className="meta">先走一次申请、接单和支付流程；有订单后这里会直接生成分享链接、SOS 和轨迹摘要。</div>
+              <div className="meta">完成申请、接单和支付流程后，可为订单生成分享链接、SOS 和轨迹摘要。</div>
               <button type="button" className="btn" onClick={() => navigate('orders')}>
                 去订单中心
               </button>
@@ -3171,15 +3171,15 @@ function App() {
         <PhoneHeader
           eyebrow="我的"
           title={profile?.nickname ?? '未登录'}
-          subtitle="资料、实名认证、司机能力和联调入口都收拢在这里。"
+          subtitle="资料、实名认证和司机能力入口集中管理。"
           highlightValue={roleLabel(currentRole)}
           highlightLabel="当前视角"
         />
 
         <section className="hero-card">
-          <div className="mini-note">真实 userId：{profile?.userId ?? '--'}</div>
+          <div className="mini-note">用户 ID：{profile?.userId ?? '--'}</div>
           <h2>{profile?.nickname ?? '未命名用户'}</h2>
-          <p>当前登录 code：{loginCode || '未记录'}。如果完成司机认证，这里会自动开放车主视角切换。</p>
+          <p>当前登录码：{loginCode || '未记录'}。完成司机认证后会开放车主视角切换。</p>
           <div className="hero-metrics">
             <div className="metric-pill">
               <strong>{realnameMeta.label}</strong>
@@ -3269,7 +3269,7 @@ function App() {
           </div>
         </section>
 
-        <SectionHeading title="司机能力入口" description="这些页面都已经完成客户端化，不再停留在设计稿预览。" />
+        <SectionHeading title="司机能力入口" description="车辆、证照、钱包和帮助入口集中在此。" />
         <section className="support-grid">
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('vehicles')}>
             <strong>车辆管理</strong>
@@ -3281,11 +3281,11 @@ function App() {
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('wallet')}>
             <strong>钱包</strong>
-            <span>履约后查看真实入账</span>
+            <span>履约后查看入账</span>
           </button>
           <button type="button" className="support-card shortcut-card" onClick={() => navigate('help')}>
             <strong>帮助中心</strong>
-            <span>联调 FAQ 与当前能力说明</span>
+            <span>订单、支付、安全问题</span>
           </button>
         </section>
 
@@ -3326,7 +3326,7 @@ function App() {
         <PhoneHeader
           eyebrow="车辆管理"
           title="把可发布车辆维护在一个干净列表里"
-          subtitle="当前页面已经接入新增车辆和设置默认车辆，编辑能力等待后端返回完整车牌信息后再开放。"
+          subtitle="新增车辆、查看审核状态，并设置默认发布车辆。"
           highlightValue={formatNumber(vehicles.length)}
           highlightLabel="车辆数"
         />
@@ -3400,7 +3400,7 @@ function App() {
           </div>
         </section>
 
-        <SectionHeading title="已登记车辆" description="真实列表接口返回的是脱敏车牌，因此当前列表主打查看和设默认。" />
+        <SectionHeading title="已登记车辆" description="车辆列表展示审核状态、座位数和默认车辆。" />
         {vehicles.length === 0 ? (
           <EmptyState title="暂无车辆" body="先创建一辆车，才能在发布页真正发出 trip。" />
         ) : (
@@ -3456,13 +3456,13 @@ function App() {
         <PhoneHeader
           eyebrow="驾驶证认证"
           title="把车主资格先补齐"
-          subtitle="后端会用驾驶证状态和车辆审核状态共同判断是否允许发布行程。"
+          subtitle="驾驶证状态和车辆审核状态共同决定是否允许发布行程。"
           highlightValue={meta.label}
           highlightLabel="审核状态"
         />
 
         <section className="upload-panel">
-          <div className="upload-badge">真实接口提交</div>
+          <div className="upload-badge">提交审核</div>
           <div className="form-stack" style={{ marginTop: 14 }}>
             <input
               className="field-input"
@@ -3539,14 +3539,14 @@ function App() {
       <div className="content">
         <PhoneHeader
           eyebrow="司机钱包"
-          title="履约之后，真实入账会落到这里"
-          subtitle="钱包余额和流水都直接读取后端。如果你完成了支付、上车和到达确认，这里就能看到真实收益。"
+          title="收入与流水"
+          subtitle="完成支付、上车和到达确认后，司机收入会进入钱包流水。"
           highlightValue={formatMoney(walletAccount.availableAmountFen)}
           highlightLabel="可用余额"
         />
 
         <section className="finance-hero hero-card">
-          <div className="mini-note">真实钱包账户</div>
+          <div className="mini-note">钱包账户</div>
           <div className="finance-balance">
             <strong>{formatMoney(walletAccount.availableAmountFen)}</strong>
             <span>可用余额</span>
@@ -3567,9 +3567,9 @@ function App() {
           </div>
         </section>
 
-        <SectionHeading title="钱包流水" description="当前支持读取真实流水列表。" />
+        <SectionHeading title="钱包流水" description="按时间查看收入、提现和结算记录。" />
         {walletLedger.length === 0 ? (
-          <EmptyState title="暂无钱包流水" body="完成一笔真实订单后，再回来刷新这里看看司机入账。" />
+          <EmptyState title="暂无钱包流水" body="完成订单后，可在此查看司机入账记录。" />
         ) : (
           <section className="panel" style={{ padding: 16 }}>
             {walletLedger.map((item) => (
@@ -3600,10 +3600,10 @@ function App() {
       <div className="content">
         <PhoneHeader
           eyebrow="优惠券"
-          title="页面已经补齐，接口仍待后端开放"
-          subtitle="这里保留完整的优惠券视觉结构，但当前不会连接虚假的 API。"
-          highlightValue="待接"
-          highlightLabel="后端接口"
+          title="可用权益"
+          subtitle="查看立减券、折扣券和即将到期的同行权益。"
+          highlightValue={String(staticCoupons.filter((item) => item.status !== '已使用').length)}
+          highlightLabel="可用"
         />
 
         <section className="coupon-tabs">
@@ -3635,8 +3635,8 @@ function App() {
       <div className="content">
         <PhoneHeader
           eyebrow="帮助中心"
-          title="把当前产品能力和联调边界说清楚"
-          subtitle="这页除了产品帮助，也承载前后端联调时最容易踩坑的关键说明。"
+          title="订单、支付与安全"
+          subtitle="常见问题按出行流程整理，优先解决当前订单相关问题。"
           highlightValue="FAQ"
           highlightLabel={`${faqItems.length} 条`}
         />
@@ -3699,32 +3699,32 @@ function App() {
       <section className="ambient-panel">
         <div className="ambient-copy">
           <span className="ambient-kicker">SFC Client</span>
-          <h1>客户端已从设计工作台升级为真实联调界面</h1>
+          <h1>顺风车出行工作台</h1>
           <p>
-            我们把设计稿的视觉语言保留下来，但页面本身已经改造成可运行的 React 客户端。右侧面板保留联调视角，用来快速登录、跳页和刷新真实数据。
+            左侧保留出行状态、订单状态和安全状态，右侧可快速切换账号、刷新数据和定位页面。
           </p>
         </div>
 
         <div className="ambient-points">
           <div className="ambient-card">
-            <strong>独立目录</strong>
-            <span>`frontend/client-app` 已与后端彻底分离。</span>
+            <strong>乘客入口</strong>
+            <span>搜索、申请、支付与安全操作集中在同一流程。</span>
           </div>
           <div className="ambient-card">
-            <strong>真实主链路</strong>
-            <span>登录、搜索、发布、接单、支付、履约、钱包都可接真接口。</span>
+            <strong>车主入口</strong>
+            <span>发布、接单、履约、钱包和车辆认证可连续处理。</span>
           </div>
           <div className="ambient-card">
             <strong>安全闭环</strong>
-            <span>安全配置、SOS、分享链接和轨迹摘要已接真实接口。</span>
+            <span>紧急联系人、分享链接、SOS 和轨迹摘要保持可见。</span>
           </div>
         </div>
       </section>
 
       <main className="device-stage">
         {toast ? <div className={`status-banner ${toast.tone}`}>{toast.message}</div> : null}
-        {bootstrapping ? <div className="status-banner info">正在恢复会话并拉取真实基础数据...</div> : null}
-        {pageLoading ? <div className="status-banner info">正在读取当前页面的真实接口数据...</div> : null}
+        {bootstrapping ? <div className="status-banner info">正在恢复会话...</div> : null}
+        {pageLoading ? <div className="status-banner info">正在刷新当前页面...</div> : null}
 
         <div className="phone-shell app-phone">
           <div className="mist one"></div>
@@ -3736,7 +3736,7 @@ function App() {
       <aside className="inspector-panel">
         <section className="inspector-card">
           <div className="inspector-head">
-            <span className="panel-kicker">联调面板</span>
+            <span className="panel-kicker">会话</span>
             <h2>当前会话</h2>
           </div>
           {profile ? (
@@ -3759,7 +3759,7 @@ function App() {
               </div>
             </div>
           ) : (
-            <div className="inspector-empty">尚未登录，先用任意 code 走一次真实登录。</div>
+            <div className="inspector-empty">尚未登录，请先选择账号。</div>
           )}
           <div className="quick-code-grid">
             {quickLoginCodes.map((item) => (
@@ -3773,7 +3773,7 @@ function App() {
             <button type="button" className="btn-soft" onClick={() => void refreshCurrentView()}>
               刷新当前页数据
             </button>
-            <button type="button" className="btn-ghost" onClick={() => performLogout('已从联调面板退出登录')}>
+            <button type="button" className="btn-ghost" onClick={() => performLogout('已退出登录')}>
               清空当前登录
             </button>
           </div>
@@ -3797,7 +3797,7 @@ function App() {
                   <strong>{item.label}</strong>
                   <span>{item.summary}</span>
                 </div>
-                <em className={actionToneClass(item.mode === '真实接口' ? 'safe' : 'info')}>
+                <em className={actionToneClass(item.mode === '可操作' ? 'safe' : 'info')}>
                   {item.mode}
                 </em>
               </button>
@@ -3807,8 +3807,8 @@ function App() {
 
         <section className="inspector-card">
           <div className="inspector-head">
-            <span className="panel-kicker">真实能力边界</span>
-            <h2>当前说明</h2>
+            <span className="panel-kicker">能力范围</span>
+            <h2>当前可用</h2>
           </div>
           <div className="inspector-list">
             {backendCapabilityNotes.map((note) => (

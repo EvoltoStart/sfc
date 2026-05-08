@@ -5,7 +5,7 @@
         <view>
           <view class="hero-kicker">我的 · 账号中枢</view>
           <view class="hero-title">{{profileDisplayName}}，把资料、认证和司机入口都收在一起</view>
-          <view class="hero-desc">同一个账号承接乘客和车主两种视角，登录状态直接驱动首页、订单、发布和钱包的真实联调。</view>
+          <view class="hero-desc">同一个账号承接乘客和车主两种视角，登录后可继续管理订单、发布和钱包。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{rolePreferenceText}}</text>
@@ -19,8 +19,8 @@
     </view>
 
     <view wx:if="{{!authState.token}}" class="hero-card hero-card--accent">
-      <view class="section-title">登录真实账号</view>
-      <view class="section-desc">开发联调时推荐直接用 code 登录，后面再切微信登录和真机验证。</view>
+      <view class="section-title">登录账号</view>
+      <view class="section-desc">可使用快捷账号，也可以通过微信登录。</view>
       <view class="quick-login-grid">
         <button
           wx:for="{{quickLoginCodes}}"
@@ -34,11 +34,11 @@
         </button>
       </view>
       <view class="field-group" style="margin-top: 18rpx;">
-        <text class="field-label">自定义登录 code</text>
+        <text class="field-label">自定义登录码</text>
         <input class="field-input" value="{{loginCode}}" bindinput="handleLoginCodeInput" placeholder="例如 driver-alpha" />
       </view>
       <view class="button-row" style="margin-top: 18rpx;">
-        <button class="button-primary" bindtap="handleLoginSubmit" loading="{{loggingIn}}">开发 code 登录</button>
+        <button class="button-primary" bindtap="handleLoginSubmit" loading="{{loggingIn}}">登录</button>
         <button class="button-ghost" bindtap="handleWechatLogin" loading="{{loggingIn}}">微信登录</button>
       </view>
     </view>
@@ -64,13 +64,13 @@
         </view>
       </view>
       <view class="hero-note hero-note--safe">
-        当前角色集合：{{roleSummaryText}}。切换偏好角色不会改后端权限，只改变前端默认工作台。
+        当前角色集合：{{roleSummaryText}}。切换偏好角色只会改变默认展示视角。
       </view>
     </view>
 
     <view wx:if="{{authState.token}}" class="hero-card">
       <view class="section-title">个人资料</view>
-      <view class="section-desc">昵称和头像地址会走真实资料更新接口，保存后首页和订单会同步显示。</view>
+      <view class="section-desc">保存后首页和订单会同步显示新的昵称与头像。</view>
       <view class="field-group" style="margin-top: 18rpx;">
         <text class="field-label">昵称</text>
         <input class="field-input" data-field="nickname" value="{{profileDraft.nickname}}" bindinput="handleProfileInput" />
@@ -86,7 +86,7 @@
 
     <view wx:if="{{authState.token}}" class="hero-card hero-card--accent">
       <view class="section-title">实名认证</view>
-      <view class="section-desc">保持一个最小但真实可提交通道，提交后会刷新后端审核状态。</view>
+      <view class="section-desc">提交后会刷新实名审核状态。</view>
       <view class="field-group" style="margin-top: 18rpx;">
         <text class="field-label">姓名</text>
         <input class="field-input" data-field="realName" value="{{realnameDraft.realName}}" bindinput="handleRealnameInput" />
@@ -106,7 +106,7 @@
 
     <view wx:if="{{authState.token}}" class="panel-card">
       <view class="section-title">司机能力入口</view>
-      <view class="section-desc">车辆、驾驶证和钱包都拆成独立分包页面，避免和后端代码或乘客页面混在一起。</view>
+      <view class="section-desc">车辆、驾驶证和钱包是车主发布与接单前的关键入口。</view>
       <view class="grid-three" style="margin-top: 18rpx;">
         <button class="button-secondary profile-shortcut" bindtap="handleGoVehicles">车辆</button>
         <button class="button-secondary profile-shortcut" bindtap="handleGoLicense">驾驶证</button>

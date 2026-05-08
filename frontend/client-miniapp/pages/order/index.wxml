@@ -36,7 +36,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="订单中心需要真实账号才能拉取乘客申请、订单和车主接单数据。"
+      description="登录后可查看乘客申请、订单和车主接单数据。"
       action-text="去我的登录"
       bind:action="handleGoProfile"
     />
@@ -45,14 +45,14 @@
       <view class="section-heading">
         <view class="section-heading__body">
           <view class="section-title">我的申请</view>
-          <view class="section-desc">司机还在确认时看这里，确认后会在订单列表里出现可支付订单。</view>
+          <view class="section-desc">车主确认前显示为申请，接受后进入可支付订单。</view>
         </view>
       </view>
 
       <empty-state
         wx:if="{{!passengerRequests.length}}"
         title="还没有同行申请"
-        description="去首页搜索后申请同行，这里会出现真实的申请状态。"
+        description="去首页搜索并申请同行后，会在此显示申请状态。"
       />
 
       <view wx:for="{{passengerRequests}}" wx:key="joinRequestId" class="record-card">
@@ -82,7 +82,7 @@
       <empty-state
         wx:if="{{!passengerOrders.length}}"
         title="还没有乘客订单"
-        description="司机接受申请后，这里会出现真实订单和支付入口。"
+        description="车主接受申请后，会在此显示订单和支付入口。"
       />
 
       <view wx:for="{{passengerOrders}}" wx:key="orderId" class="record-card record-card--highlight">
@@ -117,14 +117,14 @@
       <view class="section-heading">
         <view class="section-heading__body">
           <view class="section-title">我的行程</view>
-          <view class="section-desc">这里展示发布后的真实行程，便于观察座位、状态和报名量。</view>
+          <view class="section-desc">展示已发布行程的座位、状态和报名量。</view>
         </view>
       </view>
 
       <empty-state
         wx:if="{{!driverTrips.length}}"
         title="还没有车主行程"
-        description="去发布页创建一条真实行程后，这里会出现状态和报名数。"
+        description="去发布页创建行程后，会在此显示状态和报名数。"
       />
 
       <view wx:for="{{driverTrips}}" wx:key="tripId" class="record-card">
@@ -145,14 +145,14 @@
       <view class="section-heading" style="margin-top: 10rpx;">
         <view class="section-heading__body">
           <view class="section-title">待处理报名</view>
-          <view class="section-desc">接受申请后系统会自动生成真实订单，乘客侧会进入支付链路。</view>
+          <view class="section-desc">接受申请后系统会生成订单，乘客侧进入支付流程。</view>
         </view>
       </view>
 
       <empty-state
         wx:if="{{!driverRequests.length}}"
         title="还没有待处理报名"
-        description="乘客申请同行后，这里会出现信用标签、历史订单数和处理动作。"
+        description="乘客申请同行后，会显示信用标签、历史订单数和处理动作。"
       />
 
       <view wx:for="{{driverRequests}}" wx:key="joinRequestId" class="record-card record-card--highlight">
@@ -177,14 +177,14 @@
       <view class="section-heading" style="margin-top: 10rpx;">
         <view class="section-heading__body">
           <view class="section-title">司机订单</view>
-          <view class="section-desc">上车确认、到达确认完成后，钱包会进入真实结算链路。</view>
+          <view class="section-desc">上车确认、到达确认完成后，钱包进入结算流程。</view>
         </view>
       </view>
 
       <empty-state
         wx:if="{{!driverOrders.length}}"
         title="还没有司机订单"
-        description="一旦接受申请并生成订单，这里会展示应收金额和履约状态。"
+        description="接受申请并生成订单后，会展示应收金额和履约状态。"
       />
 
       <view wx:for="{{driverOrders}}" wx:key="orderId" class="record-card">

@@ -4,8 +4,8 @@
       <view class="topbar">
         <view>
           <view class="hero-kicker">支付确认 · 平台担保</view>
-          <view class="hero-title">在线完成支付，再让订单进入真实履约链路</view>
-          <view class="hero-desc">开发态仍然保留“模拟支付成功”，它会走本地代理回调后端，而不是伪造前端状态。</view>
+          <view class="hero-title">在线完成支付，再进入履约流程</view>
+          <view class="hero-desc">支付完成后订单进入待上车状态，后续可继续确认上车与到达。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{headerPaymentStatusText}}</text>
@@ -17,7 +17,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="支付确认页需要真实账号和真实订单。"
+      description="支付确认页需要登录账号和有效订单。"
       action-text="返回订单"
       bind:action="handleBack"
     />
@@ -66,7 +66,7 @@
         支付单 {{paymentOrder.outTradeNo}} 已创建，预计过期时间 {{paymentOrderView.expireText}}。
       </view>
       <view wx:if="{{!paymentOrderView}}" class="hero-note hero-note--warn">
-        当前还没有创建支付单。先调用真实创建接口，再触发本地支付回调模拟。
+        当前还没有创建支付单，请先创建支付单。
       </view>
     </view>
 
@@ -74,17 +74,17 @@
       <view class="section-title">支付须知</view>
       <view class="info-strip" style="margin-top: 14rpx;">
         <view class="info-strip__title">平台先担保，再结算给车主</view>
-        <view class="info-strip__desc">支付成功后不会直接把钱打给车主，等订单完成并确认到达后才会进入真实结算链路。</view>
+        <view class="info-strip__desc">支付成功后不会直接把钱打给车主，等订单完成并确认到达后才会进入结算流程。</view>
       </view>
       <view class="info-strip" style="margin-top: 14rpx;">
-        <view class="info-strip__title">本地模拟只触发回调，不伪造前端状态</view>
-        <view class="info-strip__desc">你看到的支付结果会再次从真实订单和支付状态接口拉取，避免前端自说自话。</view>
+        <view class="info-strip__title">支付状态以订单为准</view>
+        <view class="info-strip__desc">支付结果会再次刷新订单和支付状态，避免重复操作。</view>
       </view>
     </view>
 
     <view wx:if="{{showOrderPanel}}" class="button-row">
       <button class="button-secondary" bindtap="handleCreatePaymentOrder" loading="{{creating}}">创建支付单</button>
-      <button class="button-primary" bindtap="handleMockPayment" loading="{{mocking}}">模拟支付成功</button>
+      <button class="button-primary" bindtap="handleMockPayment" loading="{{mocking}}">确认支付成功</button>
       <button class="button-ghost" bindtap="handleOpenOrderDetail">回订单详情</button>
     </view>
 

@@ -4,8 +4,8 @@
       <view class="topbar">
         <view>
           <view class="hero-kicker">车主端 · 驾驶证认证</view>
-          <view class="hero-title">先把驾驶证状态跑通，再让发布和接单更稳定</view>
-          <view class="hero-desc">这里直接连接驾驶证提交和状态查询接口，提交后会回刷真实审核状态。</view>
+          <view class="hero-title">先完成驾驶证认证，再发布和接单</view>
+          <view class="hero-desc">提交后会刷新审核状态，驳回原因会在此展示。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{licenseStatusText}}</text>
@@ -17,7 +17,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="驾驶证认证需要真实账号和司机资料。"
+      description="驾驶证认证需要登录账号和司机资料。"
     />
 
     <view wx:if="{{authState.token}}" class="panel-card">
@@ -39,7 +39,7 @@
 
     <view wx:if="{{authState.token}}" class="hero-card hero-card--accent">
       <view class="section-title">提交驾驶证资料</view>
-      <view class="section-desc">保留一个简单但真实的表单，便于开发时快速验证提交和状态刷新。</view>
+      <view class="section-desc">填写证件号、领证日期和有效期后提交审核。</view>
       <view class="field-group" style="margin-top: 18rpx;">
         <text class="field-label">驾驶证号</text>
         <input class="field-input" data-field="licenseNo" value="{{licenseDraft.licenseNo}}" bindinput="handleInput" />
