@@ -17,7 +17,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="行程详情需要真实账号才能拉取，并在后续直接提交同行申请。"
+      description="行程详情需要登录账号，登录后可提交同行申请。"
       action-text="返回首页"
       bind:action="handleBack"
     />
@@ -26,7 +26,7 @@
       <view class="section-heading">
         <view class="section-heading__body">
           <view class="section-title">{{tripDetail.routeInfo.startName}} → {{tripDetail.routeInfo.endName}}</view>
-          <view class="section-desc">预计 {{tripView.departText}} 出发，费用和路线信息来自真实详情接口。</view>
+          <view class="section-desc">预计 {{tripView.departText}} 出发，请确认费用、路线和剩余座位。</view>
         </view>
         <status-tag text="{{tripView.tripStatusMeta.label}}" tone="{{tripView.tripStatusMeta.tone}}" />
       </view>
@@ -49,21 +49,21 @@
           <view class="route-step__dot"></view>
           <view>
             <text class="route-step__title">{{searchDraft.startName}}</text>
-            <text class="route-step__desc">乘客上车点，以当前搜索条件提交到真实申请接口。</text>
+            <text class="route-step__desc">乘客上车点，将随同行申请提交。</text>
           </view>
         </view>
         <view class="route-step">
           <view class="route-step__dot route-step__dot--mid"></view>
           <view>
             <text class="route-step__title">{{tripDetail.routeInfo.startName}}</text>
-            <text class="route-step__desc">司机路线起点。后端会按路线重合度计算本次顺路分。</text>
+            <text class="route-step__desc">司机路线起点，系统会按路线重合度计算顺路分。</text>
           </view>
         </view>
         <view class="route-step">
           <view class="route-step__dot route-step__dot--end"></view>
           <view>
             <text class="route-step__title">{{tripDetail.routeInfo.endName}}</text>
-            <text class="route-step__desc">司机终点，同时也是当前展示的真实落客方向。</text>
+            <text class="route-step__desc">司机终点，也是当前展示的落客方向。</text>
           </view>
         </view>
       </view>

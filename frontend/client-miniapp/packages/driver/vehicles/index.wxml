@@ -5,7 +5,7 @@
         <view>
           <view class="hero-kicker">车主端 · 车辆管理</view>
           <view class="hero-title">把车辆资料补齐，发布页才能选车发单</view>
-          <view class="hero-desc">车辆新增、默认车设置都接了真实接口，后续发布行程会直接读取这里的结果。</view>
+          <view class="hero-desc">新增车辆、查看审核状态，并设置默认发布车辆。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{vehicles.length}}</text>
@@ -17,12 +17,12 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="车辆管理需要真实账号才能读取司机资料和车辆列表。"
+      description="车辆管理需要登录账号才能读取司机资料和车辆列表。"
     />
 
     <view wx:if="{{authState.token}}" class="hero-card hero-card--accent">
       <view class="section-title">新增车辆</view>
-      <view class="section-desc">这是一个最小但真实的提交通道，提交后会立刻回刷后端车辆列表。</view>
+      <view class="section-desc">提交后会刷新车辆列表和审核状态。</view>
       <view class="grid-two" style="margin-top: 18rpx;">
         <view class="field-group">
           <text class="field-label">品牌</text>
@@ -61,7 +61,7 @@
       <empty-state
         wx:if="{{!vehicles.length}}"
         title="还没有车辆"
-        description="新增车辆后，这里会显示真实审核状态和默认车辆设置入口。"
+        description="新增车辆后，会显示审核状态和默认车辆设置入口。"
       />
       <view wx:for="{{vehicles}}" wx:key="id" class="record-card">
         <view class="record-card__header">

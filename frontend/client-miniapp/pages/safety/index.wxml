@@ -3,9 +3,9 @@
     <view class="header-card">
       <view class="topbar">
         <view>
-          <view class="hero-kicker">安全中心 · 真实接口</view>
-          <view class="hero-title">联系人、分享、SOS 和轨迹都走真实后端</view>
-          <view class="hero-desc">这里可以保存默认安全配置，并基于真实订单生成分享链接、上报 SOS、上传轨迹样本。</view>
+          <view class="hero-kicker">安全中心</view>
+          <view class="hero-title">联系人、分享、SOS 和轨迹集中管理</view>
+          <view class="hero-desc">保存默认安全配置，并在订单中使用分享、SOS 和轨迹能力。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{contacts.length}}</text>
@@ -23,7 +23,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="安全中心已经接入真实接口，请先登录再操作联系人、分享、SOS 和轨迹能力。"
+      description="请先登录再操作联系人、分享、SOS 和轨迹能力。"
       action-text="去我的登录"
       bind:action="handleGoProfile"
     />
@@ -50,7 +50,7 @@
 
     <view wx:if="{{authState.token}}" class="hero-card hero-card--accent">
       <view class="section-title">新增紧急联系人</view>
-      <view class="section-desc">这里直接调用真实联系人接口，保存后会立刻回刷列表。</view>
+      <view class="section-desc">保存后会刷新联系人列表。</view>
       <view class="field-group" style="margin-top: 18rpx;">
         <text class="field-label">姓名</text>
         <input class="field-input" data-field="name" value="{{contactDraft.name}}" bindinput="handleDraftInput" />
@@ -102,7 +102,7 @@
       <empty-state
         wx:if="{{!orders.length}}"
         title="还没有可操作订单"
-        description="先在订单中心生成乘客或车主订单，再回来验证分享、SOS 和轨迹接口。"
+        description="先在订单中心生成乘客或车主订单，再回来使用分享、SOS 和轨迹能力。"
       />
       <view wx:for="{{orders}}" wx:key="orderId" class="record-card">
         <view class="record-card__header">
@@ -144,7 +144,7 @@
     </view>
 
     <view class="panel-card">
-      <view class="section-title">联调 FAQ</view>
+      <view class="section-title">常见问题</view>
       <view wx:for="{{faqItems}}" wx:key="id" class="info-strip" style="margin-top: 14rpx;">
         <view class="info-strip__title">{{item.question}}</view>
         <view class="info-strip__desc">{{item.answer}}</view>

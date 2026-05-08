@@ -66,7 +66,7 @@ export const navItems: NavItem[] = [
   { key: 'content', code: '08', label: '内容配置', summary: 'Banner、协议、客服内容发布' },
   { key: 'report', code: '09', label: '报表统计', summary: '订单、用户、财务、专线报表' },
   { key: 'auditlog', code: '10', label: '操作审计', summary: '行为追踪、请求链路、风险导出' },
-  { key: 'tokens', code: '11', label: '设计 Token', summary: '颜色、排版、组件落地规范' },
+  { key: 'tokens', code: '11', label: '系统设置', summary: '状态口径、组件规范、值守配置' },
 ]
 
 export const commandFilters = ['全城', '今日', '专线优先', '高风险优先', '待审核优先']
@@ -304,7 +304,7 @@ export const opsLineInfo: InfoRecord[] = [
 
 export const opsPackageCards: PriorityRecord[] = [
   { title: '通勤包', detail: '周一至周五固定通勤，复购率 61%', tone: 'success' },
-  { title: '商务包', detail: '高客单价，退款率偏高，需要优化说明', tone: 'warning' },
+  { title: '商务包', detail: '高客单价，退款率偏高，需要复核规则文案', tone: 'warning' },
   { title: '夜间安心包', detail: '女性乘客占比高，需联动安全策略', tone: 'danger' },
 ]
 
@@ -329,7 +329,7 @@ export const bannerRows: TableRow[] = [
   { name: '客服联系方式更新', channel: '帮助中心', status: '草稿', operator: '内容 02', updatedAt: '09:30' },
 ]
 
-export const publishFlow = ['草稿编辑', '预览校对', '审批确认', '发布上线']
+export const publishFlow = ['内容编辑', '预览校对', '审批确认', '发布上线']
 
 export const reportStats: StatItem[] = [
   { label: '订单报表', value: '12', tone: 'brand' },
@@ -346,10 +346,10 @@ export const reportProgress: ProgressItem[] = [
 ]
 
 export const reportExports: InfoRecord[] = [
-  { title: '订单周报', value: '生成中，预计 2 分钟' },
-  { title: '财务对账单', value: '已完成，可下载' },
-  { title: '专线月报', value: '等待排队' },
-  { title: '用户增长图表', value: '昨日 23:58 自动生成' },
+  { title: '订单日报', value: '今日 09:00 已生成' },
+  { title: '财务对账单', value: '待财务复核' },
+  { title: '专线周报', value: '每周一自动生成' },
+  { title: '用户增长图表', value: '昨日 23:58 更新' },
 ]
 
 export const auditLogStats: StatItem[] = [

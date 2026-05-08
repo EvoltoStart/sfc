@@ -4,8 +4,8 @@
       <view class="topbar">
         <view>
           <view class="hero-kicker">车主端 · 钱包</view>
-          <view class="hero-title">把收入、冻结金额和流水都接回真实钱包接口</view>
-          <view class="hero-desc">完成支付并确认到达后，这里会开始出现真实结算流水。</view>
+          <view class="hero-title">收入、冻结金额和流水</view>
+          <view class="hero-desc">完成支付并确认到达后，结算流水会进入钱包。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{availableBalanceText}}</text>
@@ -17,7 +17,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="还没有登录"
-      description="钱包页需要真实账号才能拉取余额和流水。"
+      description="钱包页需要登录账号才能拉取余额和流水。"
     />
 
     <view wx:if="{{showWalletPanel}}" class="panel-card">
@@ -47,7 +47,7 @@
       <empty-state
         wx:if="{{!ledger.length}}"
         title="还没有钱包流水"
-        description="完成乘客支付并确认到达后，这里会显示真实结算记录。"
+        description="完成乘客支付并确认到达后，会显示结算记录。"
       />
       <view wx:for="{{ledger}}" wx:key="ledgerId" class="record-card">
         <view class="record-card__header">

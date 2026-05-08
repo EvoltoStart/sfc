@@ -49,7 +49,7 @@ Page({
     driverStatusLabelText: '待开通',
     licenseStatusLabelText: '待提交',
     roleSummaryText: '未返回',
-    realnameNoteText: '提交后会以真实审核状态回显。',
+    realnameNoteText: '提交后会显示审核状态。',
     realnameNoteClass: 'hero-note hero-note--warn',
     realnameStatusLabel: '未提交',
     loginCode: '',
@@ -89,7 +89,7 @@ Page({
         licenseStatus: null,
         licenseStatusMeta: null,
         roleSummaryText: '未返回',
-        realnameNoteText: '提交后会以真实审核状态回显。',
+        realnameNoteText: '提交后会显示审核状态。',
         ...buildProfileView({}),
       })
       return
@@ -107,7 +107,7 @@ Page({
       roleSummaryText: bundle.session && Array.isArray(bundle.session.roles) ? bundle.session.roles.join(' / ') : '未返回',
       realnameNoteText: bundle.realnameStatus && bundle.realnameStatus.rejectReason
         ? `驳回原因：${bundle.realnameStatus.rejectReason}`
-        : '提交后会以真实审核状态回显。',
+        : '提交后会显示审核状态。',
       ...buildProfileView({
         profile: bundle.profile,
         realnameMeta: bundle.realnameStatus ? resolveAuthMeta(bundle.realnameStatus.authStatus) : null,
@@ -237,7 +237,7 @@ Page({
       this.setData({
         realnameStatus: status,
         realnameMeta: resolveAuthMeta(status.authStatus),
-        realnameNoteText: status.rejectReason ? `驳回原因：${status.rejectReason}` : '提交后会以真实审核状态回显。',
+        realnameNoteText: status.rejectReason ? `驳回原因：${status.rejectReason}` : '提交后会显示审核状态。',
         ...buildProfileView({
           profile: this.data.profile,
           realnameMeta: resolveAuthMeta(status.authStatus),

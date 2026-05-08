@@ -6,7 +6,7 @@ Component({
     },
     description: {
       type: String,
-      value: '等你完成下一步操作后，这里会出现真实结果。',
+      value: '完成下一步操作后会显示相关记录。',
     },
     actionText: {
       type: String,
