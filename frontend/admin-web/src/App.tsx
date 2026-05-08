@@ -506,8 +506,8 @@ function App() {
           </div>
         </div>
         <div className="sidebar-copy">
-          <span className="eyebrow">x1 实现版</span>
-          <p>后台页面、筛选、分页和真实数据接入已经合并到一套统一状态流里。</p>
+          <span className="eyebrow">运营中台</span>
+          <p>审核、订单、风控、财务和内容配置集中处理。</p>
         </div>
         <nav className="sidebar-nav" aria-label="后台主导航">
           {navItems.map((item) => (
@@ -657,7 +657,7 @@ function LoginPage(props: PageProps) {
   return (
     <div className="page-grid">
       <div className="two-col">
-        <Surface title="登录与会话恢复" subtitle="默认开发账号为 `admin / admin123`。">
+        <Surface title="登录与会话恢复" subtitle="使用后台账号进入运营控制台。">
           <div className="input-grid">
             <label className="input-field">
               <span>账号</span>
@@ -677,7 +677,7 @@ function LoginPage(props: PageProps) {
             </button>
           </div>
         </Surface>
-        <Surface title="权限初始化" subtitle="登录成功后会真实加载菜单、按钮和数据域权限。">
+        <Surface title="权限范围" subtitle="展示当前账号可访问的菜单、按钮和数据域。">
           <InfoList items={[
             { title: '菜单权限', value: props.permissions?.menus.join(' / ') || '登录后加载' },
             { title: '按钮权限', value: props.permissions?.buttons.join(' / ') || '登录后加载' },
@@ -705,12 +705,12 @@ function DashboardPage(props: PageProps) {
       ]
   return (
     <div className="page-grid">
-      <StatsSection title="今日平台态势" subtitle="工作台已优先接入真实后台接口。" stats={stats} />
+      <StatsSection title="今日平台态势" subtitle="订单、审核和异常风险集中监控。" stats={stats} />
       <div className="two-col">
-        <Surface title="风控热区" subtitle="保留高密度可视化工作面。">
+        <Surface title="风控热区" subtitle="按风险类型快速定位待处理事件。">
           <HeatGrid items={dashboardRiskHeat} />
         </Surface>
-        <Surface title="运营指令条" subtitle="固定放置高频操作。">
+        <Surface title="运营指令条" subtitle="高频处置入口集中放置。">
           <ActionCapsules items={['进入高风险订单队列', '查看待审核资料', '导出日报', '进入专线运营']} />
         </Surface>
       </div>
@@ -746,8 +746,8 @@ function AuditPage(props: PageProps) {
   ]
   return (
     <div className="page-grid">
-      <StatsSection title="资质审核队列" subtitle="支持真实筛选、分页和详情联动。" stats={stats} />
-      <Surface title="审核筛选条" subtitle="筛选后只刷新审核数据区。">
+      <StatsSection title="资质审核队列" subtitle="按资料类型和审核状态定位待处理任务。" stats={stats} />
+      <Surface title="审核筛选条" subtitle="筛选后刷新审核列表和详情。">
         <div className="filter-toolbar">
           <div className="input-grid">
             <label className="input-field">
@@ -776,7 +776,7 @@ function AuditPage(props: PageProps) {
         </div>
       </Surface>
       <div className="layout-2-1">
-        <Surface title="审核列表" subtitle="数据来自 `/api/v1/admin/audits`。">
+        <Surface title="审核列表" subtitle="按提交时间展示当前审核任务。">
           <DataTable
             columns={[
               { key: 'name', label: '申请人' },
@@ -794,7 +794,7 @@ function AuditPage(props: PageProps) {
           />
           <Pager state={props.auditPager} onPageChange={props.onAuditPageChange} />
         </Surface>
-        <Surface title="审核详情" subtitle="右侧详情来自 `/api/v1/admin/audits/{id}`。">
+        <Surface title="审核详情" subtitle="展示申请材料、处理历史和当前操作。">
           <InfoList items={detailItems} compact />
           <TimelineList items={props.data.auditDetail?.historyLogs?.map((item) => `${String(item.taskStatus ?? '')} · ${String(item.remark ?? '无备注')}`) ?? []} />
           <div className="action-row">
@@ -827,13 +827,13 @@ function OrdersPage(props: PageProps) {
     : []
   return (
     <div className="page-grid">
-      <StatsSection title="订单中心" subtitle="支持真实筛选、分页和详情联动。" stats={[
+      <StatsSection title="订单中心" subtitle="按状态、司乘关键词和异常标记检索订单。" stats={[
         { label: '当前页订单', value: String(props.data.orders.length), tone: 'brand' },
         { label: '异常订单', value: String(props.data.orders.filter((item) => item.abnormalFlag).length), tone: 'danger' },
         { label: '已选订单', value: props.selectedOrderId ? String(props.selectedOrderId) : '0', tone: 'info' },
         { label: '筛选状态', value: props.orderFiltersState.abnormalOnly ? '仅异常' : '全部', tone: 'warning' },
       ]} />
-      <Surface title="搜索与筛选" subtitle="筛选后只刷新订单数据区。">
+      <Surface title="搜索与筛选" subtitle="筛选后刷新订单列表和右侧详情。">
         <div className="filter-toolbar">
           <div className="input-grid order-filter-grid">
             <label className="input-field">
@@ -860,7 +860,7 @@ function OrdersPage(props: PageProps) {
         </div>
       </Surface>
       <div className="layout-2-1">
-        <Surface title="订单列表" subtitle="数据来自 `/api/v1/admin/orders`。">
+        <Surface title="订单列表" subtitle="展示当前筛选条件下的订单。">
           <DataTable columns={[
             { key: 'orderNo', label: '订单号' },
             { key: 'route', label: '线路' },
@@ -874,7 +874,7 @@ function OrdersPage(props: PageProps) {
           }} />
           <Pager state={props.orderPager} onPageChange={props.onOrderPageChange} />
         </Surface>
-        <Surface title="订单详情" subtitle="详情来自 `/api/v1/admin/orders/{id}`。">
+        <Surface title="订单详情" subtitle="展示路线、司乘、金额和状态流转。">
           <InfoList items={detailItems} compact />
           <TimelineList items={props.data.orderDetail?.statusLogs?.map((item) => {
             const toStatus = String(item['toStatus'] ?? item['ToStatus'] ?? item['status'] ?? '状态更新')
@@ -933,7 +933,7 @@ function RiskPage(props: PageProps) {
         { label: '顺路度', value: String(props.data.routeLogs.length), tone: 'info' },
         { label: '定价', value: String(props.data.pricingLogs.length), tone: 'brand' },
       ]} />
-      <Surface title="风控筛选" subtitle="支持切换当前视图，并对 SOS 状态做真实筛选。">
+      <Surface title="风控筛选" subtitle="切换 SOS、超时、顺路度和定价日志视图。">
         <div className="filter-toolbar">
           <div className="input-grid">
             <label className="input-field">
@@ -972,7 +972,7 @@ function RiskPage(props: PageProps) {
         ))}
       </div>
       <div className="layout-2-1">
-        <Surface title="事件列表" subtitle="当前列表会随视图切换而切换。">
+        <Surface title="事件列表" subtitle="列表随当前风险视图切换。">
           <DataTable columns={[
             { key: 'type', label: '类型' },
             { key: 'target', label: '目标' },
@@ -989,7 +989,7 @@ function RiskPage(props: PageProps) {
           }} />
           <Pager state={props.riskPager} onPageChange={props.onRiskPageChange} />
         </Surface>
-        <Surface title="风险详情" subtitle="右侧详情跟随当前选中事件切换。">
+        <Surface title="风险详情" subtitle="展示当前事件的处理线索。">
           <InfoList items={detailItems} compact />
         </Surface>
       </div>
@@ -1015,13 +1015,13 @@ function FinancePage(props: PageProps) {
   const detailItems = resolveFinanceDetailItems(props)
   return (
     <div className="page-grid">
-      <StatsSection title="财务中心" subtitle="支持真实筛选、分页和详情联动。" stats={[
+      <StatsSection title="财务中心" subtitle="收入、服务费、提现和流水集中核对。" stats={[
         { label: '流水条数', value: String(props.data.ledger.length), tone: 'brand' },
         { label: '提现条数', value: String(props.data.withdraws.length), tone: 'warning' },
         { label: '累计收入', value: formatMoneyFen(props.data.reports?.incomeSummary?.totalIncomeFen ?? 0), tone: 'success' },
         { label: '累计服务费', value: formatMoneyFen(props.data.reports?.serviceFeeSummary?.totalServiceFeeFen ?? 0), tone: 'info' },
       ]} />
-      <Surface title="财务筛选" subtitle="当前已把业务类型筛选接到真实流水接口。">
+      <Surface title="财务筛选" subtitle="按业务类型筛选账务流水。">
         <div className="filter-toolbar">
           <div className="input-grid">
             <label className="input-field">
@@ -1035,7 +1035,7 @@ function FinancePage(props: PageProps) {
         </div>
       </Surface>
       <div className="layout-2-1">
-        <Surface title="账务流水" subtitle="主列表来自 `/api/v1/admin/finance/ledger`。">
+        <Surface title="账务流水" subtitle="展示订单结算、提现和服务费记录。">
           <DataTable columns={[
             { key: 'ledgerNo', label: '流水号' },
             { key: 'bizType', label: '业务类型' },
@@ -1050,13 +1050,13 @@ function FinancePage(props: PageProps) {
           <Pager state={props.financePager} onPageChange={props.onFinancePageChange} />
         </Surface>
         <div className="stack-column">
-          <Surface title="提现审核队列" subtitle="数据来自 `/api/v1/admin/finance/withdraws`。">
+          <Surface title="提现审核队列" subtitle="关注待审核和高额提现记录。">
             <PriorityList items={withdrawItems} selectedTitle={props.data.withdraws.find((item) => item.withdrawId === props.selectedWithdrawId)?.userName ?? ''} onItemClick={(title) => {
               const target = props.data.withdraws.find((item) => item.userName === title)
               props.onSelectWithdraw(target?.withdrawId ?? null)
             }} />
           </Surface>
-          <Surface title="财务详情" subtitle="右侧详情随当前选中的流水或提现项变化。">
+          <Surface title="财务详情" subtitle="随当前选中的流水或提现项变化。">
             <InfoList items={detailItems} compact />
           </Surface>
         </div>
@@ -1088,13 +1088,13 @@ function UsersPage(props: PageProps) {
       ]
   return (
     <div className="page-grid">
-      <StatsSection title="用户管理" subtitle="用户列表与用户详情已经接入真实后台接口。" stats={[
+      <StatsSection title="用户管理" subtitle="查看用户状态、实名状态和订单概况。" stats={[
         { label: '当前页用户', value: String(props.data.users.length), tone: 'brand' },
         { label: '已选中用户', value: props.selectedUserId ? String(props.selectedUserId) : '0', tone: 'info' },
         ...userStats.slice(2),
       ]} />
       <div className="layout-2-1">
-        <Surface title="用户列表" subtitle="主列表来自 `/api/v1/admin/users`。">
+        <Surface title="用户列表" subtitle="按当前分页展示用户基础信息。">
           <DataTable columns={[
             { key: 'user', label: '用户' },
             { key: 'role', label: '状态' },
@@ -1107,7 +1107,7 @@ function UsersPage(props: PageProps) {
           }} />
           <Pager state={props.userPager} onPageChange={props.onUserPageChange} />
         </Surface>
-        <Surface title="用户详情摘要" subtitle="右侧详情来自 `/api/v1/admin/users/{id}`。">
+        <Surface title="用户详情摘要" subtitle="展示实名、联系人、车辆和行程概况。">
           <InfoList items={detailItems} compact />
           <PriorityList items={[
             { title: '车辆数量', detail: `${props.data.userDetail?.summary.vehicleCount ?? 0} 辆`, tone: 'info' },
@@ -1128,19 +1128,19 @@ function OpsPage(props: PageProps) {
   })) ?? []
   return (
     <div className="page-grid">
-      <StatsSection title="专线运营" subtitle="专线页已经接入真实运营概览接口。" stats={[
+      <StatsSection title="专线运营" subtitle="查看线路、服务包和司机覆盖情况。" stats={[
         { label: '线路数量', value: String(lineItems.length), tone: 'brand' },
         { label: '服务包数量', value: String(packageItems.length), tone: 'success' },
         ...opsStats.slice(2),
       ]} />
       <div className="two-col">
-        <Surface title="专线运行摘要" subtitle="线路摘要来自 `/api/v1/admin/ops/overview`。">
+        <Surface title="专线运行摘要" subtitle="按线路汇总行程、订单和活跃司机。">
           <InfoList items={lineItems.length > 0 ? lineItems.slice(0, 4).map((item) => ({
             title: item.routeSummary,
             value: `行程 ${item.tripCount} / 订单 ${item.orderCount} / 司机 ${item.activeDrivers}`,
           })) : opsLineInfo} />
         </Surface>
-        <Surface title="近 7 日专线效果" subtitle="这里用真实线路数据折算成相对热度。">
+        <Surface title="近 7 日专线效果" subtitle="按订单量折算线路热度。">
           <ProgressList items={lineItems.length > 0 ? lineItems.slice(0, 4).map((item, index) => ({
             label: item.routeSummary,
             value: Math.max(10, Math.min(100, item.orderCount * 20)),
@@ -1153,7 +1153,7 @@ function OpsPage(props: PageProps) {
           ]} />
         </Surface>
       </div>
-      <Surface title="服务包与补贴策略" subtitle="服务包信息来自运营概览接口。">
+      <Surface title="服务包与补贴策略" subtitle="展示当前服务包状态和运营备注。">
         <PriorityList items={packageItems.length > 0 ? packageItems : [{
           title: '通勤包',
           detail: 'ACTIVE / 工作日通勤线路组合',
@@ -1176,13 +1176,13 @@ function ContentPage(props: PageProps) {
   const selectedBanner = props.data.banners.find((item) => item.bannerId === props.selectedBannerId) ?? null
   return (
     <div className="page-grid">
-      <StatsSection title="内容配置" subtitle="Banner 与帮助中心文章都来自真实后台接口。" stats={[
+      <StatsSection title="内容配置" subtitle="维护 Banner、协议与帮助中心内容。" stats={[
         { label: 'Banner 数量', value: String(props.data.banners.length), tone: 'brand' },
         { label: '帮助中心', value: props.data.helpArticle ? '已接入' : '未加载', tone: 'info' },
         ...contentStats.slice(2),
       ]} />
       <div className="two-col">
-        <Surface title="Banner 列表" subtitle="内容来自 `/api/v1/admin/cms/banners`。">
+        <Surface title="Banner 列表" subtitle="展示已配置的运营 Banner。">
           <DataTable columns={[
             { key: 'name', label: '内容名称' },
             { key: 'channel', label: '跳转位置' },
@@ -1194,7 +1194,7 @@ function ContentPage(props: PageProps) {
             if (Number.isFinite(id)) props.onSelectBanner(id)
           }} />
         </Surface>
-        <Surface title="发布流程" subtitle="右侧优先展示当前选中的 Banner。">
+        <Surface title="发布流程" subtitle="选中 Banner 后展示其发布信息。">
           <StepRail items={publishFlow} />
           <div className="preview-card">
             <span className="eyebrow">{selectedBanner ? '当前 Banner' : '帮助中心文章'}</span>
@@ -1226,12 +1226,12 @@ function ReportPage(props: PageProps) {
     : reportStats
   return (
     <div className="page-grid">
-      <StatsSection title="报表统计" subtitle="报表页当前优先使用真实财务汇总数据。" stats={stats} />
+      <StatsSection title="报表统计" subtitle="汇总收入、订单、提现和用户趋势。" stats={stats} />
       <div className="two-col">
-        <Surface title="核心指标走势" subtitle="保留高层摘要面板。">
+        <Surface title="核心指标走势" subtitle="展示关键指标的相对变化。">
           <ProgressList items={reportProgress} />
         </Surface>
-        <Surface title="导出任务队列" subtitle="保留异步导出工作流占位。">
+        <Surface title="导出任务队列" subtitle="展示报表生成和复核状态。">
           <InfoList items={reportExports} />
         </Surface>
       </div>
@@ -1249,12 +1249,12 @@ function AuditLogPage(props: PageProps) {
   }))
   return (
     <div className="page-grid">
-      <StatsSection title="操作审计" subtitle="操作审计页已经接入真实后台日志接口。" stats={[
+      <StatsSection title="操作审计" subtitle="追踪后台关键操作和请求链路。" stats={[
         { label: '当前页日志', value: String(props.data.auditLogs.length), tone: 'brand' },
         ...reportStats.slice(1, 4),
       ]} />
       <div className="two-col">
-        <Surface title="审计日志列表" subtitle="数据来自 `/api/v1/admin/audit-logs`。">
+        <Surface title="审计日志列表" subtitle="展示当前页审计记录。">
           <DataTable columns={[
             { key: 'time', label: '时间' },
             { key: 'actor', label: '操作人' },
@@ -1264,11 +1264,11 @@ function AuditLogPage(props: PageProps) {
           ]} rows={rows} />
           <Pager state={props.auditLogPager} onPageChange={props.onAuditLogPageChange} />
         </Surface>
-        <Surface title="审计链路摘要" subtitle="右侧时间轴显示最近日志摘要。">
+        <Surface title="审计链路摘要" subtitle="按时间展示最近操作。">
           <TimelineList items={props.data.auditLogs.slice(0, 4).map((item) => `${formatDateTime(item.time)} · ${item.action}`)} />
           <div className="alert-box danger">
             <strong>高风险提醒</strong>
-            <p>当前日志已覆盖审核留痕和 CMS 变更，后续可以继续扩展更多后台行为源。</p>
+            <p>审核、CMS 变更和高风险操作需优先关注。</p>
           </div>
         </Surface>
       </div>
@@ -1279,7 +1279,7 @@ function AuditLogPage(props: PageProps) {
 function TokensPage() {
   return (
     <div className="page-grid">
-      <Surface title="设计 Token 与组件拆分" subtitle="这部分保留为工程规范页。">
+      <Surface title="系统状态口径" subtitle="统一后台状态、风险等级和组件使用规范。">
         <div className="three-col">
           {tokenGroups.map((group) => (
             <div key={group.title} className="token-group">
@@ -1294,7 +1294,7 @@ function TokensPage() {
         </div>
       </Surface>
       <div className="two-col">
-        <Surface title="颜色 Token" subtitle="颜色语义用于状态、风险与层级表达。">
+        <Surface title="状态颜色" subtitle="颜色语义用于状态、风险与层级表达。">
           <div className="swatch-grid">
             {colorTokens.map((token) => (
               <div key={token.name} className="swatch-card">
@@ -1305,7 +1305,7 @@ function TokensPage() {
             ))}
           </div>
         </Surface>
-        <Surface title="排版与组件" subtitle="统一字体、字号节奏和组件职责。">
+        <Surface title="组件规范" subtitle="统一后台列表、详情、筛选和处置组件。">
           <InfoList items={typeTokens} />
           <PriorityList items={componentTokens} />
         </Surface>
@@ -1335,7 +1335,7 @@ function Surface(props: { title: string; subtitle: string; children: ReactNode; 
     <section className={props.tone ? `surface tone-${props.tone}` : 'surface'}>
       <div className="surface-head">
         <div>
-          <span className="eyebrow">模块</span>
+          <span className="eyebrow">工作区</span>
           <h2>{props.title}</h2>
           <p>{props.subtitle}</p>
         </div>

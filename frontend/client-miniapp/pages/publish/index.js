@@ -291,7 +291,7 @@ Page({
   },
 
   async handlePreview() {
-    if (!runtime.ensureLoggedIn('请先登录后刷新真实发布预览')) {
+    if (!runtime.ensureLoggedIn('请先登录后刷新发布预览')) {
       return
     }
     this.setData({ previewing: true })
@@ -348,7 +348,7 @@ Page({
           vehicleIndex: this.data.vehicleIndex,
         }),
       })
-      runtime.showSuccess('已刷新真实价格和顺路度')
+      runtime.showSuccess('已刷新价格和顺路度')
     } catch (error) {
       runtime.handleError(error, '刷新预览失败')
     } finally {
@@ -357,7 +357,7 @@ Page({
   },
 
   async handleCreateTrip() {
-    if (!runtime.ensureLoggedIn('请先登录后发布真实行程')) {
+    if (!runtime.ensureLoggedIn('请先登录后发布行程')) {
       return
     }
     if (!this.data.publishDraft.vehicleId) {

@@ -5,7 +5,7 @@
         <view>
           <view class="hero-kicker">车主端 · 发布行程</view>
           <view class="hero-title">把路线、车辆、座位和平台规则一次说清楚</view>
-          <view class="hero-desc">小程序直接接真实价格预览、顺路度校验和发布接口，不再只是静态原型。</view>
+          <view class="hero-desc">发布前先确认价格预览、顺路度、车辆和座位数。</view>
         </view>
         <view class="topbar__aside">
           <text class="topbar__value">{{routeScoreTopText}}</text>
@@ -31,7 +31,7 @@
     <empty-state
       wx:if="{{!authState.token}}"
       title="先登录车主账号"
-      description="发布行程需要真实账号、车辆和司机能力状态，建议先用 driver-* 账号登录。"
+      description="发布行程需要登录账号、车辆和司机能力状态。"
       action-text="去我的登录"
       bind:action="handleGoProfile"
     />
@@ -39,12 +39,12 @@
     <view wx:if="{{authState.token}}">
       <view class="hero-note hero-note--warn" wx:if="{{showDriverSummary}}">
         {{driverLicenseSummary}}
-        若发布失败，通常是车辆或司机认证还没满足后端规则。
+        若发布失败，通常是车辆或司机认证还未满足规则。
       </view>
 
       <view class="hero-card hero-card--accent">
         <view class="section-title">本次发布配置</view>
-        <view class="section-desc">路线预设负责填充经纬度，真实接口仍会重新计算价格、顺路度和频控规则。</view>
+        <view class="section-desc">路线预设用于填充起终点，可按本次出行再做调整。</view>
         <view class="chip-row" style="margin-top: 18rpx;">
           <view
             wx:for="{{routePresetItems}}"
@@ -91,7 +91,7 @@
           </view>
         </view>
         <view class="button-row" style="margin-top: 20rpx;">
-          <button class="button-secondary" bindtap="handlePreview" loading="{{previewing}}">刷新真实预览</button>
+          <button class="button-secondary" bindtap="handlePreview" loading="{{previewing}}">刷新预览</button>
           <button class="button-ghost" bindtap="handleSaveTemplate">保存常用路线</button>
         </view>
       </view>
@@ -99,8 +99,8 @@
       <view class="panel-card">
         <view class="section-heading">
           <view class="section-heading__body">
-            <view class="section-title">平台预览</view>
-            <view class="section-desc">调用真实价格和顺路度接口，先让车主看清楚平台会如何判断这条路线。</view>
+            <view class="section-title">价格与顺路度</view>
+            <view class="section-desc">发布前确认总价、服务费、距离和顺路度。</view>
           </view>
           <button class="button-ghost button-inline" bindtap="handleGoVehicles">管理车辆</button>
         </view>
@@ -130,15 +130,15 @@
       <view class="panel-card">
         <view class="section-heading">
           <view class="section-heading__body">
-            <view class="section-title">后端已保存的常用路线</view>
-            <view class="section-desc">接口目前返回名称摘要，但默认项设置已经接上真实接口。</view>
+            <view class="section-title">常用路线</view>
+            <view class="section-desc">保存高频路线，后续发布时可快速参考。</view>
           </view>
           <button class="button-ghost button-inline" bindtap="handleGoLicense">驾驶证</button>
         </view>
         <empty-state
           wx:if="{{!routeTemplates.length}}"
-          title="还没有后端常用路线"
-          description="点击“保存常用路线”后，这里会显示后端返回的摘要列表。"
+          title="还没有常用路线"
+          description="点击“保存常用路线”后，会在此显示路线摘要。"
         />
         <view wx:for="{{routeTemplates}}" wx:key="id" class="record-card">
           <view class="record-card__header">
@@ -155,7 +155,7 @@
       </view>
 
       <view class="button-row">
-        <button class="button-primary" bindtap="handleCreateTrip" loading="{{submitting}}">确认发布真实行程</button>
+        <button class="button-primary" bindtap="handleCreateTrip" loading="{{submitting}}">确认发布行程</button>
       </view>
     </view>
 

@@ -9,23 +9,23 @@ const { formatDateTime, formatDistance } = require('../../utils/formatter')
 const capabilityCards = [
   {
     title: '紧急联系人',
-    description: '已接入真实接口，可以新增、删除默认联系人。',
+    description: '可新增、删除默认联系人。',
     tone: 'safe',
   },
   {
     title: '行程分享',
-    description: '已接入真实分享链接接口，可按订单生成 24 小时安全链接。',
+    description: '可按订单生成 24 小时安全链接。',
     tone: 'safe',
   },
   {
     title: 'SOS / 轨迹留痕',
-    description: '已接入 SOS 上报、轨迹批量上传和轨迹摘要查询接口。',
+    description: '支持 SOS 上报、轨迹批量上传和轨迹摘要查询。',
     tone: 'safe',
   },
 ]
 
 capabilityCards.forEach((item) => {
-  item.toneLabel = '已接入'
+  item.toneLabel = '可用'
   item.noteClass = 'hero-note--safe'
 })
 
@@ -362,7 +362,7 @@ Page({
         orderId: this.data.selectedOrderId,
         currentLat: 30.2062,
         currentLng: 120.212,
-        remark: '小程序安全中心联调 SOS',
+        remark: '小程序安全中心 SOS',
       })
       this.setData({ sosResult: result })
       runtime.showSuccess('SOS 已上报')

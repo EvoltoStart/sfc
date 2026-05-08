@@ -6,9 +6,9 @@ const { loadSearchDraft, saveSearchDraft, saveLastSearchPayload } = require('../
 const { formatDateTime, formatMoney, formatPercent, formatRating } = require('../../utils/formatter')
 
 const capabilityNotes = [
-  '真实接口已接入登录、搜索匹配、行程详情、同行申请、支付和钱包结算主链路。',
-  '安全配置、行程分享、SOS 和轨迹摘要已接入真实接口，需要先生成订单再验证订单级动作。',
-  '本地开发默认请求 18082，支付模拟回调依赖 4174 代理转发。',
+  '可完成登录、搜索匹配、行程详情、同行申请、支付和钱包结算主流程。',
+  '安全配置、行程分享、SOS 和轨迹摘要需要关联订单后使用。',
+  '车主完成车辆和驾驶证认证后，可发布行程并处理乘客申请。',
 ]
 
 function mapMatchItem(item) {
@@ -44,7 +44,7 @@ function buildPageState(input) {
     profileDisplayName: profile && profile.nickname ? profile.nickname : '先登录',
     featuredTotal,
     featuredTotalText: String(featuredTotal),
-    loginStateText: authState.token ? '已接入' : '待登录',
+    loginStateText: authState.token ? '已登录' : '待登录',
     routePresetItems: routePresets.map((item) => mapPresetItem(item, searchDraft.presetId)),
   }
 }
@@ -140,7 +140,7 @@ Page({
     this.setData({ loggingIn: true })
     try {
       await runtime.loginByCode(this.data.loginCode)
-      runtime.showSuccess('真实账号已登录')
+      runtime.showSuccess('账号已登录')
       this.setData({ loginCode: '' })
       await this.bootstrap()
     } catch (error) {
@@ -216,7 +216,7 @@ Page({
   },
 
   async loadFeaturedMatches(silent) {
-    if (!runtime.ensureLoggedIn(silent ? '' : '请先登录后查看真实推荐')) {
+    if (!runtime.ensureLoggedIn(silent ? '' : '请先登录后查看推荐')) {
       return
     }
     if (!silent) {
@@ -266,7 +266,7 @@ Page({
   },
 
   async handleSearch() {
-    if (!runtime.ensureLoggedIn('请先登录后再搜索真实行程')) {
+    if (!runtime.ensureLoggedIn('请先登录后再搜索行程')) {
       return
     }
     this.setData({ loading: true })

@@ -159,7 +159,7 @@ Page({
       runtime.showSuccess('已触发本地支付回调')
       await this.bootstrap()
     } catch (error) {
-      runtime.handleError(error, '模拟支付失败')
+      runtime.handleError(error, '支付确认失败')
     } finally {
       this.setData({ mocking: false })
     }
