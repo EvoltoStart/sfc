@@ -76,7 +76,7 @@ func registerPaymentRoutes(mux *http.ServeMux, svc *service.Service, handler *Ha
 	mux.HandleFunc("GET /api/v1/payments/{orderId}/status", middleware.RequireAuth(svc, handler.getPaymentStatus))
 	mux.HandleFunc("POST /api/v1/payments/callback/wechat", handler.paymentCallback)
 	mux.HandleFunc("POST /api/v1/payments/callback/alipay", handler.alipayPaymentCallback)
-	mux.HandleFunc("POST /__dev/mock-payment-callback", handler.paymentCallback)
+	mux.HandleFunc("POST /__dev/mock-payment-callback", handler.devPaymentCallback)
 	mux.HandleFunc("POST /api/v1/refunds", middleware.RequireAuth(svc, handler.createRefund))
 }
 
